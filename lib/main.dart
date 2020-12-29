@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
@@ -20,6 +21,7 @@ Future<Map<String, dynamic>> fetchPosts() async {
   }
 }
 
+//Post objective are created there from raw json object
 List<Post> postsFromJson({List<dynamic> rawPosts}) {
   final List<Post> posts = [];
 
@@ -28,6 +30,51 @@ List<Post> postsFromJson({List<dynamic> rawPosts}) {
     posts.add(newPost);
   }
   return posts;
+}
+
+//Gain and Loss posts are needed to be aggregate by date and be used in graph
+//the data structure will be point system <Date, Sum>
+List<TimeSeriesPosts> getTimeTotalByFlair(
+    {List<Post> posts, String searchFlair}) {
+  final List<TimeSeriesPosts> data = [];
+  final Map<String, int> timeSeriesMap = {};
+
+  for (var post in posts) {
+    if (post.flair == searchFlair) {
+      final dateString = post.date_without_time.toString();
+      final numberOfPost = timeSeriesMap[dateString] ?? 0;
+      timeSeriesMap[dateString] = numberOfPost + 1;
+    }
+  }
+
+  timeSeriesMap.forEach((date, count) {
+    final point = TimeSeriesPosts(DateTime.parse(date), count);
+    data.add(point);
+  });
+
+  data.sort((TimeSeriesPosts a, TimeSeriesPosts b) => a.time.compareTo(b.time));
+  return data;
+}
+
+///Data Structured used to hold time and post
+class TimeSeriesPosts {
+  final DateTime time;
+  final int totalPosts;
+
+  TimeSeriesPosts(this.time, this.totalPosts);
+
+  static List<charts.Series<dynamic, DateTime>> convertListToSeries(
+      {List<TimeSeriesPosts> data}) {
+    return [
+      new charts.Series<TimeSeriesPosts, DateTime>(
+        id: 'Post',
+        colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
+        domainFn: (TimeSeriesPosts posts, _) => posts.time,
+        measureFn: (TimeSeriesPosts posts, _) => posts.totalPosts,
+        data: data,
+      )
+    ];
+  }
 }
 
 void main() {
@@ -58,16 +105,27 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   Future<List<Post>> posts;
   Future<PostSummary> summary;
+  Future<List<charts.Series>> gainPostDataPoint;
 
   @override
   void initState() {
     super.initState();
 
     final response = fetchPosts();
-    posts =
-        response.then((json) => postsFromJson(rawPosts: json['data_used']));
+    posts = response.then((json) => postsFromJson(rawPosts: json['data_used']));
+
     summary =
         response.then((json) => PostSummary.fromJson(json: json['summary']));
+
+    gainPostDataPoint = posts.then((postsFromFuture) {
+      final data =
+          getTimeTotalByFlair(posts: postsFromFuture, searchFlair: 'Gain');
+
+      data.forEach((point) {
+        print('date ${point.time},  total: ${point.totalPosts}');
+      });
+      return TimeSeriesPosts.convertListToSeries(data: data);
+    });
   }
 
   @override
@@ -75,7 +133,6 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(title: const Text('Wall Street Bets')),
       body: Container(
-        height: 1000,
         child: Column(
           children: [
             FutureBuilder<PostSummary>(
@@ -91,15 +148,10 @@ class _MyHomePageState extends State<MyHomePage> {
                             ),
                           ),
                         ),
-
                         Expanded(
                             child: Card(
                           child: Text(snapshot.data.loss.toString()),
                         ))
-                        // Text(snapshot.data.gain.toString()),
-                        // Text(snapshot.data.loss.toString()),
-                        // Text('${snapshot.data.gainGrowthRate * 100}%'),
-                        // Text('${snapshot.data.lossGrowthRate * 100}%'),
                       ],
                     );
                   } else if (snapshot.hasError) {
@@ -110,45 +162,39 @@ class _MyHomePageState extends State<MyHomePage> {
                   );
                 }),
             Expanded(
-              child: FutureBuilder<List<Post>>(
-                future: posts,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    final firstPost = snapshot.data[0];
-                    final secondPost = snapshot.data[1];
-                    final thirdPost = snapshot.data[2];
-
-                    return ListView(
-                      padding: const EdgeInsets.all(8),
-                      children: <Widget>[
-                        Container(
-                          height: 50,
-                          color: Colors.amber[600],
-                          child: Center(child: Text(firstPost.title)),
-                        ),
-                        Container(
-                          height: 50,
-                          color: Colors.amber[500],
-                          child: Center(child: Text(secondPost.title)),
-                        ),
-                        Container(
-                          height: 50,
-                          color: Colors.amber[100],
-                          child: Center(child: Text(thirdPost.title)),
-                        ),
-                      ],
-                    );
-                  } else if (snapshot.hasError) {
-                    return Text("${snapshot.error}");
-                  }
-                  return CircularProgressIndicator();
-                },
-              ),
-            ),
+                child: FutureBuilder(
+              future: gainPostDataPoint,
+              builder: (BuildContext context, future) {
+                if (future.hasData) {
+                  return WallStreetBetTimeSeriesChart(series: future.data);
+                } else if (future.hasError) {
+                  return Text("${future.error}");
+                }
+                return SizedBox(
+                  child: CircularProgressIndicator(),
+                  width: 60,
+                  height: 60,
+                );
+              },
+            ))
           ],
         ),
       ),
-      //Text('Hello world'),
+    );
+  }
+}
+
+class WallStreetBetTimeSeriesChart extends StatelessWidget {
+  final List<charts.Series> series;
+
+  WallStreetBetTimeSeriesChart({this.series});
+
+  @override
+  Widget build(BuildContext context) {
+    return new charts.TimeSeriesChart(
+      series,
+      animate: false,
+      dateTimeFactory: const charts.UTCDateTimeFactory(),
     );
   }
 }
