@@ -30,4 +30,5 @@ class Post {
     return this.flair == 'Loss';
   }
 
+
 }
