@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:wsb_dashboard/widgets/home.dart';
+import 'package:wsb_dashboard/pages/Home.dart';
 
 void main() {
   runApp(WallStreetBets());

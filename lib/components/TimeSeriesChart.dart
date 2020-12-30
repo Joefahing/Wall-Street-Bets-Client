@@ -1,0 +1,38 @@
+import 'package:flutter/material.dart';
+import 'package:charts_flutter/flutter.dart' as charts;
+
+class WallStreetBetTimeSeriesChart extends StatelessWidget {
+  final List<charts.Series> series;
+  final bool animate;
+
+  WallStreetBetTimeSeriesChart({this.series, this.animate});
+
+  @override
+  Widget build(BuildContext context) {
+    return new charts.TimeSeriesChart(
+      series,
+      animate: animate,
+      dateTimeFactory: const charts.UTCDateTimeFactory(),
+    );
+  }
+}
+
+///Data Structured used to hold time and post
+class TimeSeriesPosts {
+  final DateTime time;
+  final int totalPosts;
+
+  TimeSeriesPosts(this.time, this.totalPosts);
+
+  static List<charts.Series<dynamic, DateTime>> convertListToSeries({List<TimeSeriesPosts> data}) {
+    return [
+      new charts.Series<TimeSeriesPosts, DateTime>(
+        id: 'Post',
+        colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
+        domainFn: (TimeSeriesPosts posts, _) => posts.time,
+        measureFn: (TimeSeriesPosts posts, _) => posts.totalPosts,
+        data: data,
+      )
+    ];
+  }
+}
