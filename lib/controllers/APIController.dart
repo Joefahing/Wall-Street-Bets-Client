@@ -1,18 +1,18 @@
 import 'dart:convert';
 import 'dart:async';
 
-import 'package:charts_flutter/flutter.dart' as charts;
-import 'package:http/http.dart' as http;
+import 'package:charts_flutter/flutter.dart' as Charts;
+import 'package:http/http.dart' as HTTP;
 
 import 'package:wsb_dashboard/model/post.dart';
 import 'package:wsb_dashboard/model/summary.dart';
 
 /// This class is responsible for handling all the methods use in process data received from API
-/// anything from http fetching to processing json into structure suitable for widget consumption
+/// anything from HTTP fetching to processing json into structure suitable for widget consumption
 
 class APIController {
-  static Future<Map<String, dynamic>> fetchPosts(String timeLength) async {
-    final apiResponse = await http.get(
+  Future<Map<String, dynamic>> fetchPosts(String timeLength) async {
+    final apiResponse = await HTTP.get(
         "https://wall-street-bet-server.herokuapp.com/stats/gain_loss/post?interval=$timeLength");
 
     if (apiResponse.statusCode != 200) throw Exception('Failed to fetch posts from API end point');
@@ -21,9 +21,16 @@ class APIController {
     return unprocessJson;
   }
 
+  Future<PostSummary> getSummary({Future<Map<String, dynamic>> response}) async {
+    PostSummary summary =
+        await response.then((json) => PostSummary.fromJson(json: json['summary']));
+    return summary;
+  }
+
   ///fromJson factory method from Post class is used there to deserilize json post
-  static List<Post> postsFromJson(List<dynamic> rawPosts) {
+  Future<List<Post>> getPosts({Future<Map<String, dynamic>> response}) async {
     final List<Post> posts = [];
+    final rawPosts = await response.then((json) => json['data_used']);
 
     for (var post in rawPosts) {
       final newPost = Post.fromJson(json: post);
@@ -32,9 +39,31 @@ class APIController {
     return posts;
   }
 
+  Future<List<Charts.Series>> getGainLossDataPoint({Future<Map<String, dynamic>> response}) async {
+    final posts = await getPosts(response: response);
+    final gainData = _getTimeTotalByFlair(posts: posts, searchFlair: 'Gain');
+    final lossData = _getTimeTotalByFlair(posts: posts, searchFlair: 'Loss');
+    final gainChartData = convertDataToChartSeries(posts: gainData, color: ChartColor.green);
+    final lossChartData = convertDataToChartSeries(posts: lossData, color: ChartColor.red);
+    final chartDataSet = [gainChartData, lossChartData];
+
+    return chartDataSet;
+  }
+
+  Charts.Series<dynamic, DateTime> convertDataToChartSeries(
+      {List<TimeSeriesPosts> posts, dynamic color}) {
+    return new Charts.Series<TimeSeriesPosts, DateTime>(
+      id: 'Post',
+      colorFn: (_, __) => color,
+      domainFn: (TimeSeriesPosts posts, _) => posts.time,
+      measureFn: (TimeSeriesPosts posts, _) => posts.totalPosts,
+      data: posts,
+    );
+  }
+
   ///Gain and Loss posts are needed to be aggregate by date and be used in graph
   ///the data structure will be point system <Date, Sum>
-  List<TimeSeriesPosts> getTimeTotalByFlair({List<Post> posts, String searchFlair}) {
+  List<TimeSeriesPosts> _getTimeTotalByFlair({List<Post> posts, String searchFlair}) {
     final Map<String, int> timeTotalMap = _populateTimeSeriesMap(posts, searchFlair);
     final List<TimeSeriesPosts> timeTotalList = _convertTimeSeriesMapToList(timeTotalMap);
 
@@ -65,17 +94,24 @@ class APIController {
   }
 }
 
+class ChartColor {
+  static final blue = Charts.MaterialPalette.blue.shadeDefault;
+  static final red = Charts.MaterialPalette.red.shadeDefault;
+  static final green = Charts.MaterialPalette.green.shadeDefault;
+  static final yellow = Charts.MaterialPalette.yellow.shadeDefault;
+}
+
 class TimeSeriesPosts {
   final DateTime time;
   final int totalPosts;
 
   TimeSeriesPosts(this.time, this.totalPosts);
 
-  static List<charts.Series<dynamic, DateTime>> convertListToSeries({List<TimeSeriesPosts> data}) {
+  static List<Charts.Series<dynamic, DateTime>> convertListToSeries({List<TimeSeriesPosts> data}) {
     return [
-      new charts.Series<TimeSeriesPosts, DateTime>(
+      new Charts.Series<TimeSeriesPosts, DateTime>(
         id: 'Post',
-        colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
+        colorFn: (_, __) => Charts.MaterialPalette.blue.shadeDefault,
         domainFn: (TimeSeriesPosts posts, _) => posts.time,
         measureFn: (TimeSeriesPosts posts, _) => posts.totalPosts,
         data: data,

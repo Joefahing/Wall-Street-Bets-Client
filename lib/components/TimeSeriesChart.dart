@@ -23,16 +23,4 @@ class TimeSeriesPosts {
   final int totalPosts;
 
   TimeSeriesPosts(this.time, this.totalPosts);
-
-  static List<charts.Series<dynamic, DateTime>> convertListToSeries({List<TimeSeriesPosts> data}) {
-    return [
-      new charts.Series<TimeSeriesPosts, DateTime>(
-        id: 'Post',
-        colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
-        domainFn: (TimeSeriesPosts posts, _) => posts.time,
-        measureFn: (TimeSeriesPosts posts, _) => posts.totalPosts,
-        data: data,
-      )
-    ];
-  }
 }

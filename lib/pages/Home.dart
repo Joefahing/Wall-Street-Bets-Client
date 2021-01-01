@@ -1,10 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:charts_flutter/flutter.dart' as Charts;
 
 import 'package:wsb_dashboard/model/post.dart';
 import 'package:wsb_dashboard/model/summary.dart';
+import 'package:wsb_dashboard/controllers/APIController.dart';
+import 'package:wsb_dashboard/widgets/LineChart.dart';
 
 class WallStreetBetHomePage extends StatefulWidget {
   WallStreetBetHomePage({Key key, this.title}) : super(key: key);
@@ -16,27 +18,21 @@ class WallStreetBetHomePage extends StatefulWidget {
 }
 
 class _WallStreetBetHomePageState extends State<WallStreetBetHomePage> {
+  Future<Map<String, dynamic>> apiResponse;
   Future<List<Post>> posts;
   Future<PostSummary> summary;
-  Future<List<charts.Series>> gainPostDataPoint;
+  Future<List<Charts.Series>> lineGraphDataSet;
+
+  final apiController = APIController();
 
   @override
   void initState() {
     super.initState();
 
-    final response = fetchPosts();
-    posts = response.then((json) => postsFromJson(rawPosts: json['data_used']));
-
-    summary = response.then((json) => PostSummary.fromJson(json: json['summary']));
-
-    gainPostDataPoint = posts.then((postsFromFuture) {
-      final data = getTimeTotalByFlair(posts: postsFromFuture, searchFlair: 'Gain');
-
-      data.forEach((point) {
-        print('date ${point.time},  total: ${point.totalPosts}');
-      });
-      return TimeSeriesPosts.convertListToSeries(data: data);
-    });
+    final apiResponse = apiController.fetchPosts('week');
+    summary = apiController.getSummary(response: apiResponse);
+    posts = apiController.getPosts(response: apiResponse);
+    lineGraphDataSet = apiController.getGainLossDataPoint(response: apiResponse);
   }
 
   @override
@@ -73,21 +69,26 @@ class _WallStreetBetHomePageState extends State<WallStreetBetHomePage> {
                   );
                 }),
             Expanded(
+              child: Container(
+               // width: 500,
+                //height: 500,
                 child: FutureBuilder(
-              future: gainPostDataPoint,
-              builder: (BuildContext context, future) {
-                if (future.hasData) {
-                  return WallStreetBetTimeSeriesChart(series: future.data);
-                } else if (future.hasError) {
-                  return Text("${future.error}");
-                }
-                return SizedBox(
-                  child: CircularProgressIndicator(),
-                  width: 60,
-                  height: 60,
-                );
-              },
-            ))
+                  future: lineGraphDataSet,
+                  builder: (BuildContext context, future) {
+                    if (future.hasData) {
+                      return WallStreetBetTimeSeriesChart(series: future.data);
+                    } else if (future.hasError) {
+                      return Text("${future.error}");
+                    }
+                    return SizedBox(
+                      child: CircularProgressIndicator(),
+                      width: 60,
+                      height: 60,
+                    );
+                  },
+                ),
+              ),
+            )
           ],
         ),
       ),
