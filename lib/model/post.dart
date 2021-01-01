@@ -2,16 +2,16 @@ class Post {
   String title;
   String flair;
   String id;
-  DateTime date_created;
-  DateTime date_without_time;
+  DateTime dateCreated;
+  DateTime dateWithoutTime;
 
   Post({String title, String flair, String id, String date}) {
     this.title = title;
     this.flair = flair;
     this.id = id;
-    this.date_created = DateTime.parse(date);
-    this.date_without_time = DateTime(
-        this.date_created.year, this.date_created.month, this.date_created.day);
+    this.dateCreated = DateTime.parse(date);
+    this.dateWithoutTime =
+        DateTime(this.dateCreated.year, this.dateCreated.month, this.dateCreated.day);
   }
 
   factory Post.fromJson({Map<String, dynamic> json}) {
@@ -22,13 +22,7 @@ class Post {
         date: json['date_created'] as String);
   }
 
-  bool isGain() {
-    return this.flair == 'Gain';
+  bool sameFlair(String flair) {
+    return this.flair == flair;
   }
-
-  bool isLoss() {
-    return this.flair == 'Loss';
-  }
-
-
 }
