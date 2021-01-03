@@ -1,56 +1,62 @@
 import 'package:flutter/material.dart';
 
-enum AdaptiveWindow { small, medium, large }
+// enum AdaptiveWindow { small, medium, large }
 
-extension on AdaptiveWindow {
-  static AdaptiveWindow getAdaptiveWindowBySize({BuildContext context}) {
-    double windowWidth = MediaQuery.of(context).size.width;
+class AdaptiveWindow {
+  double width;
+  String type;
 
-    if (windowWidth >= 0 && windowWidth <= 600) {
-      return AdaptiveWindow.small;
-    } else if (windowWidth >= 601 && windowWidth <= 1024) {
-      return AdaptiveWindow.medium;
-    } else if (windowWidth >= 1025) {
-      return AdaptiveWindow.large;
+  AdaptiveWindow({this.width, this.type});
+
+  factory AdaptiveWindow.fromContext({BuildContext context}) {
+    double width = MediaQuery.of(context).size.width;
+
+    if (width >= 0 && width <= 600) {
+      return AdaptiveWindow(width: width, type: 'small');
+    } else if (width >= 601 && width <= 1024) {
+      return AdaptiveWindow(width: width, type: 'medium');
+    } else if (width >= 1025) {
+      return AdaptiveWindow(width: width, type: 'large');
     } else {
       throw Exception('Incorrect window size');
     }
   }
 
-  Breakpoint getBreakpoint(BuildContext context) {
-    double windowWidth = MediaQuery.of(context).size.width;
+  Breakpoint getBreakpoint() {
     const double baseWidth = 1025;
 
-    switch (this) {
-      case AdaptiveWindow.small:
+    switch (type) {
+      case 'small':
         return Breakpoint.small();
-      case AdaptiveWindow.medium:
+      case 'medium':
         return Breakpoint.medium();
-      case AdaptiveWindow.large:
-        return Breakpoint.large(base: baseWidth, extended: windowWidth);
+      case 'large':
+        return Breakpoint.large(base: baseWidth, extended: width);
       default:
         throw AssertionError('Unable to identify window');
     }
   }
 }
 
+
 class Breakpoint {
   final int column;
-  final double gutter = 16;
+  final double gutter;
   final double topDownMargin = 16;
   final double leftRightMargin;
 
-  Breakpoint({this.column, this.leftRightMargin});
+  Breakpoint({this.column, this.gutter, this.leftRightMargin});
 
   factory Breakpoint.small() {
-    return Breakpoint(column: 4, leftRightMargin: 16);
+    return Breakpoint(column: 4, gutter: 8, leftRightMargin: 16);
   }
 
   factory Breakpoint.medium() {
-    return Breakpoint(column: 8, leftRightMargin: 32);
+    return Breakpoint(column: 8, gutter: 16, leftRightMargin: 32);
   }
 
   factory Breakpoint.large({double base, double extended}) {
-    return Breakpoint(column: 16, leftRightMargin: (extended - base) + 32);
+    const multiplier = 5;
+    return Breakpoint(column: 16, gutter: 16, leftRightMargin: (extended - base) / multiplier + 32);
   }
 }

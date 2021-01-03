@@ -3,10 +3,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as Charts;
 
-import 'package:wsb_dashboard/model/post.dart';
-import 'package:wsb_dashboard/model/summary.dart';
-import 'package:wsb_dashboard/controllers/APIController.dart';
-import 'package:wsb_dashboard/widgets/LineChart.dart';
+import '../model/post.dart';
+import '../model/summary.dart';
+import '../controllers/APIController.dart';
+import '../widgets/LineChart.dart';
+import '../components/adaptive.dart';
 
 class WallStreetBetHomePage extends StatefulWidget {
   WallStreetBetHomePage({Key key, this.title}) : super(key: key);
@@ -29,7 +30,7 @@ class _WallStreetBetHomePageState extends State<WallStreetBetHomePage> {
   void initState() {
     super.initState();
 
-    final apiResponse = apiController.fetchPosts('week');
+    final apiResponse = apiController.fetchPosts('month');
     summary = apiController.getSummary(response: apiResponse);
     posts = apiController.getPosts(response: apiResponse);
     lineGraphDataSet = apiController.getGainLossDataPoint(response: apiResponse);
@@ -37,35 +38,16 @@ class _WallStreetBetHomePageState extends State<WallStreetBetHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    Size screenSize = MediaQuery.of(context).size;
-    double extraSmall = 8;
-    double small = 16;
-    double medium = 32;
-    double large = 48;
-    double horizontalSpacer = small;
-    double verticalSpacer = small;
-    double layoutMarginSide = medium;
-    double layoutMarginTopDown = small;
-
-    if (screenSize.width < 600) {
-      horizontalSpacer = extraSmall;
-      verticalSpacer = extraSmall;
-      layoutMarginSide = medium;
-    } else if (screenSize.width < 1440) {
-      horizontalSpacer = small;
-      verticalSpacer = small;
-      layoutMarginSide = medium;
-    } else {
-      layoutMarginSide = (screenSize.width - 1440) + 24;
-    }
+    final adaptive = AdaptiveWindow.fromContext(context: context);
+    final measurements = adaptive.getBreakpoint();
 
     return Scaffold(
       body: Container(
         margin: EdgeInsets.only(
-            right: layoutMarginSide,
-            left: layoutMarginSide,
-            top: layoutMarginTopDown,
-            bottom: layoutMarginTopDown),
+            right: measurements.leftRightMargin,
+            left: measurements.leftRightMargin,
+            top: measurements.topDownMargin,
+            bottom: measurements.topDownMargin),
         child: Column(
           children: [
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
@@ -85,7 +67,7 @@ class _WallStreetBetHomePageState extends State<WallStreetBetHomePage> {
                 ],
               )
             ]),
-            SizedBox(height: horizontalSpacer, width: verticalSpacer),
+            SizedBox(height: measurements.gutter, width: measurements.gutter),
             FutureBuilder<PostSummary>(
                 future: summary,
                 builder: (context, snapshot) {
@@ -93,7 +75,7 @@ class _WallStreetBetHomePageState extends State<WallStreetBetHomePage> {
                     return LayoutBuilder(
                       builder: (context, constraint) {
                         ///These variable will be move to grid view unit
-                        int crossAxisCount = screenSize.width < 600 ? 1 : 3;
+                        int crossAxisCount = adaptive.width < 600 ? 1 : 3;
                         double textFieldHeigh = 80;
                         double itemWidth = constraint.maxWidth / crossAxisCount;
 
