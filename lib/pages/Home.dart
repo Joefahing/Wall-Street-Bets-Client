@@ -47,7 +47,17 @@ class _WallStreetBetHomePageState extends State<WallStreetBetHomePage> {
     double layoutMarginSide = medium;
     double layoutMarginTopDown = small;
 
-    
+    if (screenSize.width < 600) {
+      horizontalSpacer = extraSmall;
+      verticalSpacer = extraSmall;
+      layoutMarginSide = medium;
+    } else if (screenSize.width < 1440) {
+      horizontalSpacer = small;
+      verticalSpacer = small;
+      layoutMarginSide = medium;
+    } else {
+      layoutMarginSide = (screenSize.width - 1440) + 24;
+    }
 
     return Scaffold(
       body: Container(
