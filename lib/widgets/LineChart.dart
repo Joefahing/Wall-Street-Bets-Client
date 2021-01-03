@@ -12,7 +12,6 @@ class WallStreetBetTimeSeriesChart extends StatelessWidget {
       series,
       animate: false,
       dateTimeFactory: const Charts.UTCDateTimeFactory(),
-      defaultRenderer: Charts.LineRendererConfig(includePoints: true),
     );
   }
 }
