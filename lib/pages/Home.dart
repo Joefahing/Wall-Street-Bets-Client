@@ -3,11 +3,13 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as Charts;
 
+import '../components/adaptive.dart';
+import '../controllers/APIController.dart';
 import '../model/post.dart';
 import '../model/summary.dart';
-import '../controllers/APIController.dart';
-import '../widgets/LineChart.dart';
-import '../components/adaptive.dart';
+
+import '../widgets/line_chart.dart';
+import '../widgets/metric_card.dart';
 
 class WallStreetBetHomePage extends StatefulWidget {
   WallStreetBetHomePage({Key key, this.title}) : super(key: key);
@@ -19,21 +21,48 @@ class WallStreetBetHomePage extends StatefulWidget {
 }
 
 class _WallStreetBetHomePageState extends State<WallStreetBetHomePage> {
-  Future<Map<String, dynamic>> apiResponse;
   Future<List<Post>> posts;
   Future<PostSummary> summary;
   Future<List<Charts.Series>> lineGraphDataSet;
+  String interval = 'month';
 
   final apiController = APIController();
+
+  ///This helper method refetches data from API base on current interval and set
+  ///them to instance variables used to power the data and display
+  void _prepareAPIData() {
+    final apiResponse = apiController.fetchPosts(interval);
+    summary = apiController.getSummary(response: apiResponse);
+    posts = apiController.getPosts(response: apiResponse);
+    lineGraphDataSet = apiController.getGainLossDataPoint(response: apiResponse);
+  }
+
+  void updateWeeklyInterval() {
+    setState(() {
+      interval = 'week';
+      _prepareAPIData();
+    });
+  }
+
+  void updateMonthlyInterval() {
+    setState(() {
+      interval = 'month';
+      _prepareAPIData();
+    });
+  }
+
+  void updateDailyInterval() {
+    setState(() {
+      interval = 'day';
+      _prepareAPIData();
+    });
+  }
 
   @override
   void initState() {
     super.initState();
 
-    final apiResponse = apiController.fetchPosts('month');
-    summary = apiController.getSummary(response: apiResponse);
-    posts = apiController.getPosts(response: apiResponse);
-    lineGraphDataSet = apiController.getGainLossDataPoint(response: apiResponse);
+    _prepareAPIData();
   }
 
   @override
@@ -61,55 +90,27 @@ class _WallStreetBetHomePageState extends State<WallStreetBetHomePage> {
               Flex(
                 direction: Axis.horizontal,
                 children: [
-                  OutlinedButton(child: Text('YEAR')),
-                  OutlinedButton(child: Text('WEEK')),
-                  OutlinedButton(child: Text('DAY')),
+                  OutlinedButton(
+                    child: Text('MONTH'),
+                    onPressed: updateMonthlyInterval,
+                  ),
+                  OutlinedButton(
+                    child: Text('WEEK'),
+                    onPressed: updateWeeklyInterval,
+                  ),
+                  OutlinedButton(
+                    child: Text('DAY'),
+                    onPressed: updateDailyInterval,
+                  ),
                 ],
               )
             ]),
             SizedBox(height: measurements.gutter, width: measurements.gutter),
-            FutureBuilder<PostSummary>(
-                future: summary,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return LayoutBuilder(
-                      builder: (context, constraint) {
-                        ///These variable will be move to grid view unit
-                        int crossAxisCount = adaptive.width < 600 ? 1 : 3;
-                        double textFieldHeigh = 80;
-                        double itemWidth = constraint.maxWidth / crossAxisCount;
-
-                        return GridView.count(
-                          primary: false,
-                          shrinkWrap: true,
-                          childAspectRatio: itemWidth / textFieldHeigh,
-                          crossAxisCount: crossAxisCount,
-                          crossAxisSpacing: 10,
-                          mainAxisSpacing: 10,
-                          children: [
-                            MetricCard(
-                                title: 'Gain',
-                                rate: snapshot.data.gainGrowthRate,
-                                total: snapshot.data.gain),
-                            MetricCard(
-                                title: 'Loss',
-                                rate: snapshot.data.lossGrowthRate,
-                                total: snapshot.data.loss),
-                            MetricCard(
-                                title: 'Difference',
-                                rate: snapshot.data.lossGrowthRate,
-                                total: snapshot.data.loss)
-                          ],
-                        );
-                      },
-                    );
-                  } else if (snapshot.hasError) {
-                    return Text("${snapshot.error}");
-                  }
-                  return SizedBox(
-                    height: 30,
-                  );
-                }),
+            APIDataSlicers(
+              summary: summary,
+              width: adaptive.width,
+              gutter: measurements.gutter,
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -149,19 +150,55 @@ class _WallStreetBetHomePageState extends State<WallStreetBetHomePage> {
   }
 }
 
-class MetricCard extends StatelessWidget {
-  final String title;
-  final int total;
-  final double rate;
+class APIDataSlicers extends StatelessWidget {
+  final Future<PostSummary> summary;
+  final double width;
+  final double gutter;
+  final double textFieldHeigh = 80;
+  final double minWidth = 600;
 
-  MetricCard({@required this.title, @required this.total, @required this.rate});
+  APIDataSlicers({this.summary, this.width, this.gutter});
 
-  Widget build(context) {
-    return Card(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [Text('$title'), Text('Number of Post $total'), Text('Growth Rate $rate%')],
-      ),
-    );
+  build(BuildContext context) {
+    return FutureBuilder<PostSummary>(
+        future: summary,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return LayoutBuilder(
+              builder: (context, constraint) {
+                int crossAxisCount = width < minWidth ? 1 : 3;
+                double itemWidth = constraint.maxWidth / crossAxisCount;
+
+                return GridView.count(
+                  primary: false,
+                  shrinkWrap: true,
+                  childAspectRatio: itemWidth / textFieldHeigh,
+                  crossAxisCount: crossAxisCount,
+                  crossAxisSpacing: gutter,
+                  mainAxisSpacing: gutter,
+                  children: [
+                    MetricCard(
+                        title: 'Gain',
+                        rate: snapshot.data.gainGrowthRate,
+                        total: snapshot.data.gain),
+                    MetricCard(
+                        title: 'Loss',
+                        rate: snapshot.data.lossGrowthRate,
+                        total: snapshot.data.loss),
+                    MetricCard(
+                        title: 'Difference',
+                        rate: snapshot.data.lossGrowthRate,
+                        total: snapshot.data.loss)
+                  ],
+                );
+              },
+            );
+          } else if (snapshot.hasError) {
+            return Text("${snapshot.error}");
+          }
+          return SizedBox(
+            height: 30,
+          );
+        });
   }
 }
