@@ -24,7 +24,7 @@ class _WallStreetBetHomePageState extends State<WallStreetBetHomePage> {
   Future<List<Post>> posts;
   Future<PostSummary> summary;
   Future<List<Charts.Series>> lineGraphDataSet;
-  String interval = 'month';
+  String interval = 'week';
 
   final apiController = APIController();
 
@@ -35,6 +35,19 @@ class _WallStreetBetHomePageState extends State<WallStreetBetHomePage> {
     summary = apiController.getSummary(response: apiResponse);
     posts = apiController.getPosts(response: apiResponse);
     lineGraphDataSet = apiController.getGainLossDataPoint(response: apiResponse);
+  }
+
+  String _prepareChartTitle(String interval) {
+    switch (interval) {
+      case 'week':
+        return 'Weekly';
+      case 'day':
+        return 'Daily';
+      case 'month':
+        return 'Monthly';
+      default:
+        throw Exception('Invalid Interval');
+    }
   }
 
   void updateWeeklyInterval() {
@@ -114,7 +127,7 @@ class _WallStreetBetHomePageState extends State<WallStreetBetHomePage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Weekly Index'),
+                Text('${_prepareChartTitle(interval)} Index'),
                 Row(
                   children: [
                     Text('Gain'),
@@ -130,15 +143,19 @@ class _WallStreetBetHomePageState extends State<WallStreetBetHomePage> {
               child: FutureBuilder(
                 future: lineGraphDataSet,
                 builder: (BuildContext context, future) {
+                  final marginMultiplier = 3;
                   if (future.hasData) {
                     return WallStreetBetTimeSeriesChart(series: future.data);
                   } else if (future.hasError) {
                     return Text("${future.error}");
                   }
-                  return SizedBox(
-                    child: CircularProgressIndicator(),
-                    width: 60,
-                    height: 60,
+                  return Center(
+                    child: Padding(
+                        padding: EdgeInsets.only(
+                          right: measurements.leftRightMargin * marginMultiplier,
+                          left: measurements.leftRightMargin * marginMultiplier,
+                        ),
+                        child: LinearProgressIndicator()),
                   );
                 },
               ),
@@ -155,7 +172,11 @@ class APIDataSlicers extends StatelessWidget {
   final double width;
   final double gutter;
   final double textFieldHeigh = 80;
-  final double minWidth = 600;
+  final double minWidth = 750;
+  final double percentage = 100.0;
+  final String bullIcon = '../assets/bull_icon.png';
+  final String bearIcon = '../assets/bear_icon.png';
+  final String kangarooIcon = '../assets/kangaroo_icon.png';
 
   APIDataSlicers({this.summary, this.width, this.gutter});
 
@@ -178,17 +199,23 @@ class APIDataSlicers extends StatelessWidget {
                   mainAxisSpacing: gutter,
                   children: [
                     MetricCard(
-                        title: 'Gain',
-                        rate: snapshot.data.gainGrowthRate,
-                        total: snapshot.data.gain),
+                      title: 'Gain',
+                      rate: snapshot.data.gainGrowthRate * percentage,
+                      total: snapshot.data.gain,
+                      imageUrl: bullIcon,
+                    ),
                     MetricCard(
-                        title: 'Loss',
-                        rate: snapshot.data.lossGrowthRate,
-                        total: snapshot.data.loss),
+                      title: 'Loss',
+                      rate: snapshot.data.lossGrowthRate * percentage,
+                      total: snapshot.data.loss,
+                      imageUrl: bearIcon,
+                    ),
                     MetricCard(
-                        title: 'Difference',
-                        rate: snapshot.data.lossGrowthRate,
-                        total: snapshot.data.loss)
+                      title: 'Difference',
+                      rate: snapshot.data.differenceGrowthRate * percentage,
+                      total: snapshot.data.difference,
+                      imageUrl: kangarooIcon,
+                    )
                   ],
                 );
               },
