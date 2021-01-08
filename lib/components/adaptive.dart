@@ -11,11 +11,11 @@ class AdaptiveWindow {
   factory AdaptiveWindow.fromContext({BuildContext context}) {
     double width = MediaQuery.of(context).size.width;
 
-    if (width >= 0 && width <= 600) {
+    if (width >= 0 && width <= 750) {
       return AdaptiveWindow(width: width, type: 'small');
-    } else if (width >= 601 && width <= 1024) {
+    } else if (width >= 751 && width <= 1224) {
       return AdaptiveWindow(width: width, type: 'medium');
-    } else if (width >= 1025) {
+    } else if (width >= 1225) {
       return AdaptiveWindow(width: width, type: 'large');
     } else {
       throw Exception('Incorrect window size');
