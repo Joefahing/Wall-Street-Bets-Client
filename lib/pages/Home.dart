@@ -7,6 +7,7 @@ import '../components/adaptive.dart';
 import '../controllers/APIController.dart';
 import '../model/post.dart';
 import '../model/summary.dart';
+import '../components/theme_data.dart' as theme;
 
 import '../widgets/line_chart.dart';
 import '../widgets/metric_card.dart';
@@ -203,18 +204,21 @@ class APIDataSlicers extends StatelessWidget {
                       rate: snapshot.data.gainGrowthRate * percentage,
                       total: snapshot.data.gain,
                       imageUrl: bullIcon,
+                      color: theme.lightGreen,
                     ),
                     MetricCard(
                       title: 'Loss',
                       rate: snapshot.data.lossGrowthRate * percentage,
                       total: snapshot.data.loss,
                       imageUrl: bearIcon,
+                      color: theme.lightPink,
                     ),
                     MetricCard(
                       title: 'Difference',
                       rate: snapshot.data.differenceGrowthRate * percentage,
                       total: snapshot.data.difference,
                       imageUrl: kangarooIcon,
+                      color: theme.lightOrange
                     )
                   ],
                 );

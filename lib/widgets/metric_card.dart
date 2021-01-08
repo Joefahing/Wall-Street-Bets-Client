@@ -5,16 +5,18 @@ class MetricCard extends StatelessWidget {
   final int total;
   final double rate;
   final String imageUrl;
+  Color color = Colors.white;
 
-  MetricCard({
-    @required this.title,
-    @required this.total,
-    @required this.rate,
-    @required this.imageUrl,
-  });
+  MetricCard(
+      {@required this.title,
+      @required this.total,
+      @required this.rate,
+      @required this.imageUrl,
+      this.color});
 
   Widget build(context) {
     return Card(
+      color: color,
       child: Row(
         children: [
           Image.asset(imageUrl),
