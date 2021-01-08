@@ -14,6 +14,8 @@ class WallStreetBets extends StatelessWidget {
       title: 'Wall Street Bets Fools Index',
       theme: ThemeData(
         primaryColor: Colors.white,
+        backgroundColor: Colors.white70,
+
         primaryTextTheme: TextTheme(
           bodyText1: TextStyle(color: Colors.green),
           bodyText2: TextStyle(color: Colors.green)
