@@ -26,6 +26,7 @@ class _WallStreetBetHomePageState extends State<WallStreetBetHomePage> {
   Future<PostSummary> summary;
   Future<List<Charts.Series>> lineGraphDataSet;
   String interval = 'week';
+  List<bool> _toggleSelection = [false, true, false];
 
   final apiController = APIController();
 
@@ -51,6 +52,10 @@ class _WallStreetBetHomePageState extends State<WallStreetBetHomePage> {
     }
   }
 
+  void _resetSelection() {
+    _toggleSelection = [false, false, false];
+  }
+
   void updateWeeklyInterval() {
     setState(() {
       interval = 'week';
@@ -70,6 +75,24 @@ class _WallStreetBetHomePageState extends State<WallStreetBetHomePage> {
       interval = 'day';
       _prepareAPIData();
     });
+  }
+
+  void updateInterval(index) {
+    final Map<int, String> toggleMap = {0: 'month', 1: 'week', 2: 'day'};
+    final defaultInterval = 'month';
+    final selection = toggleMap.containsKey(index) ? toggleMap[index] : defaultInterval;
+
+    switch (selection) {
+      case 'month':
+        updateMonthlyInterval();
+        break;
+      case 'week':
+        updateWeeklyInterval();
+        break;
+      case 'day':
+        updateDailyInterval();
+        break;
+    }
   }
 
   @override
@@ -94,35 +117,44 @@ class _WallStreetBetHomePageState extends State<WallStreetBetHomePage> {
         child: Column(
           children: [
             FlatBackgroundBox(
-              child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                Flex(
-                  direction: Axis.vertical,
-                  children: [
-                    Text('Wall Street Bets for Fools', style: theme.headline1),
-                    Text('Lose Money With Friends', style: theme.headline3),
-                  ],
-                ),
-                Flex(
-                  direction: Axis.horizontal,
-                  children: [
-                    OutlinedButton(
-                      child: Text(
-                        'MONTH',
-                        style: theme.bodyText,
-                      ),
-                      onPressed: updateMonthlyInterval,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Flex(
+                    direction: Axis.vertical,
+                    children: [
+                      Text('Wall Street Bets for Fools', style: theme.headline1),
+                      Text('Lose Money With Friends', style: theme.headline3),
+                    ],
+                  ),
+                  Container(
+                    padding: EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: theme.lightGray,
+                      borderRadius: BorderRadius.circular(theme.borderRadius),
                     ),
-                    OutlinedButton(
-                      child: Text('WEEK'),
-                      onPressed: updateWeeklyInterval,
+                    child: Flex(
+                      direction: Axis.horizontal,
+                      children: [
+                        IntervalFlatButton(
+                            title: 'Monthly',
+                            color: interval == 'month' ? Colors.white : theme.lightGray,
+                            onPressed: updateMonthlyInterval),
+                        SizedBox(width: measurements.gutter),
+                        IntervalFlatButton(
+                            title: 'Weekly',
+                            color: interval == 'week' ? Colors.white : theme.lightGray,
+                            onPressed: updateWeeklyInterval),
+                        SizedBox(width: measurements.gutter),
+                        IntervalFlatButton(
+                            title: 'Daily',
+                            color: interval == 'day' ? Colors.white : theme.lightGray,
+                            onPressed: updateDailyInterval),
+                      ],
                     ),
-                    OutlinedButton(
-                      child: Text('DAY'),
-                      onPressed: updateDailyInterval,
-                    ),
-                  ],
-                )
-              ]),
+                  )
+                ],
+              ),
             ),
             SizedBox(height: measurements.gutter / 2, width: measurements.gutter),
             APIDataSlicers(
@@ -179,6 +211,24 @@ class _WallStreetBetHomePageState extends State<WallStreetBetHomePage> {
         ),
       ),
     );
+  }
+}
+
+class IntervalFlatButton extends StatelessWidget {
+  final String title;
+  final Color color;
+  void Function() onPressed;
+
+  IntervalFlatButton({@required this.title, this.color, @required this.onPressed});
+
+  @override
+  build(BuildContext context) {
+    return FlatButton(
+        child: Text(title, style: theme.headline4),
+        color: color,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(theme.borderRadius / 2)),
+        onPressed: onPressed,
+        hoverColor: theme.lightSilver);
   }
 }
 
