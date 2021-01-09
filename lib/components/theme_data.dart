@@ -12,6 +12,7 @@ final fireRed = Color(0xFFFF4646);
 
 final wordSpacing = 2.0;
 final baseFontSize = 5.0;
+final borderRadius = 10.0;
 
 final headline1 = TextStyle(
   fontFamily: 'Nunito',
@@ -43,7 +44,7 @@ final mainTheme = ThemeData(
   cardTheme: CardTheme(
     elevation: 0,
     shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(15),
+      borderRadius: BorderRadius.circular(borderRadius),
     ),
   ),
   primaryTextTheme: TextTheme(
