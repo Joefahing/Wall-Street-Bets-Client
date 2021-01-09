@@ -93,33 +93,37 @@ class _WallStreetBetHomePageState extends State<WallStreetBetHomePage> {
             bottom: measurements.topDownMargin),
         child: Column(
           children: [
-            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-              Flex(
-                direction: Axis.vertical,
-                children: [
-                  Text('Wall Street Bets for Fools'),
-                  Text('Lose Money With Friends'),
-                ],
-              ),
-              Flex(
-                direction: Axis.horizontal,
-                children: [
-                  OutlinedButton(
-                    child: Text('MONTH'),
-                    onPressed: updateMonthlyInterval,
-                  ),
-                  OutlinedButton(
-                    child: Text('WEEK'),
-                    onPressed: updateWeeklyInterval,
-                  ),
-                  OutlinedButton(
-                    child: Text('DAY'),
-                    onPressed: updateDailyInterval,
-                  ),
-                ],
-              )
-            ]),
-            SizedBox(height: measurements.gutter, width: measurements.gutter),
+            Container(
+              color: Colors.white,
+              padding: EdgeInsets.all(measurements.gutter/2),
+              child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                Flex(
+                  direction: Axis.vertical,
+                  children: [
+                    Text('Wall Street Bets for Fools', style: theme.headline1),
+                    Text('Lose Money With Friends', style: theme.headline3),
+                  ],
+                ),
+                Flex(
+                  direction: Axis.horizontal,
+                  children: [
+                    OutlinedButton(
+                      child: Text('MONTH', style: theme.bodyText,),
+                      onPressed: updateMonthlyInterval,
+                    ),
+                    OutlinedButton(
+                      child: Text('WEEK'),
+                      onPressed: updateWeeklyInterval,
+                    ),
+                    OutlinedButton(
+                      child: Text('DAY'),
+                      onPressed: updateDailyInterval,
+                    ),
+                  ],
+                )
+              ]),
+            ),
+            SizedBox(height: measurements.gutter/2, width: measurements.gutter),
             APIDataSlicers(
               summary: summary,
               width: adaptive.width,
@@ -175,9 +179,9 @@ class APIDataSlicers extends StatelessWidget {
   final double textFieldHeigh = 80;
   final double minWidth = 750;
   final double percentage = 100.0;
-  final String bullIcon = '../assets/bull_icon.png';
-  final String bearIcon = '../assets/bear_icon.png';
-  final String kangarooIcon = '../assets/kangaroo_icon.png';
+  final String bullIcon = '../assets/images/bull_icon.png';
+  final String bearIcon = '../assets/images/bear_icon.png';
+  final String kangarooIcon = '../assets/images/kangaroo_icon.png';
 
   APIDataSlicers({this.summary, this.width, this.gutter});
 
@@ -214,12 +218,11 @@ class APIDataSlicers extends StatelessWidget {
                       color: theme.lightPink,
                     ),
                     MetricCard(
-                      title: 'Difference',
-                      rate: snapshot.data.differenceGrowthRate * percentage,
-                      total: snapshot.data.difference,
-                      imageUrl: kangarooIcon,
-                      color: theme.lightOrange
-                    )
+                        title: 'Difference',
+                        rate: snapshot.data.differenceGrowthRate * percentage,
+                        total: snapshot.data.difference,
+                        imageUrl: kangarooIcon,
+                        color: theme.lightOrange)
                   ],
                 );
               },
