@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 
 import 'package:wsb_dashboard/pages/Home.dart';
+import './components/theme_data.dart';
 
 void main() {
   runApp(WallStreetBets());
 }
+
 /// Material card Text uses bodyText2 Theme
 
 class WallStreetBets extends StatelessWidget {
@@ -12,18 +14,7 @@ class WallStreetBets extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Wall Street Bets Fools Index',
-      theme: ThemeData(
-        primaryColor: Colors.white,
-        backgroundColor: Colors.white70,
-
-        primaryTextTheme: TextTheme(
-          bodyText1: TextStyle(color: Colors.green),
-          bodyText2: TextStyle(color: Colors.green)
-        ),
-        textTheme: TextTheme(
-          bodyText2: TextStyle(color: Colors.black), 
-        ),
-      ),
+      theme: mainTheme, 
       debugShowCheckedModeBanner: false,
       home: WallStreetBetHomePage(title: 'Wall Street Bets Fools Index'),
     );
