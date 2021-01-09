@@ -93,9 +93,7 @@ class _WallStreetBetHomePageState extends State<WallStreetBetHomePage> {
             bottom: measurements.topDownMargin),
         child: Column(
           children: [
-            Container(
-              color: Colors.white,
-              padding: EdgeInsets.all(measurements.gutter/2),
+            FlatBackgroundBox(
               child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                 Flex(
                   direction: Axis.vertical,
@@ -108,7 +106,10 @@ class _WallStreetBetHomePageState extends State<WallStreetBetHomePage> {
                   direction: Axis.horizontal,
                   children: [
                     OutlinedButton(
-                      child: Text('MONTH', style: theme.bodyText,),
+                      child: Text(
+                        'MONTH',
+                        style: theme.bodyText,
+                      ),
                       onPressed: updateMonthlyInterval,
                     ),
                     OutlinedButton(
@@ -123,51 +124,80 @@ class _WallStreetBetHomePageState extends State<WallStreetBetHomePage> {
                 )
               ]),
             ),
-            SizedBox(height: measurements.gutter/2, width: measurements.gutter),
+            SizedBox(height: measurements.gutter / 2, width: measurements.gutter),
             APIDataSlicers(
               summary: summary,
               width: adaptive.width,
               gutter: measurements.gutter,
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('${_prepareChartTitle(interval)} Index'),
-                Row(
-                  children: [
-                    Text('Gain'),
-                    SizedBox(width: 10),
-                    Text('Loss'),
-                    SizedBox(width: 10),
-                    Text('Total'),
-                  ],
-                )
-              ],
-            ),
+            SizedBox(height: measurements.gutter / 2, width: measurements.gutter),
             Expanded(
-              child: FutureBuilder(
-                future: lineGraphDataSet,
-                builder: (BuildContext context, future) {
-                  final marginMultiplier = 3;
-                  if (future.hasData) {
-                    return WallStreetBetTimeSeriesChart(series: future.data);
-                  } else if (future.hasError) {
-                    return Text("${future.error}");
-                  }
-                  return Center(
-                    child: Padding(
-                        padding: EdgeInsets.only(
-                          right: measurements.leftRightMargin * marginMultiplier,
-                          left: measurements.leftRightMargin * marginMultiplier,
-                        ),
-                        child: LinearProgressIndicator()),
-                  );
-                },
+              child: FlatBackgroundBox(
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('${_prepareChartTitle(interval)} Index'),
+                        Row(
+                          children: [
+                            Text('Gain'),
+                            SizedBox(width: 10),
+                            Text('Loss'),
+                            SizedBox(width: 10),
+                            Text('Total'),
+                          ],
+                        )
+                      ],
+                    ),
+                    Expanded(
+                      child: FutureBuilder(
+                        future: lineGraphDataSet,
+                        builder: (BuildContext context, future) {
+                          final marginMultiplier = 3;
+                          if (future.hasData) {
+                            return WallStreetBetTimeSeriesChart(series: future.data);
+                          } else if (future.hasError) {
+                            return Text("${future.error}");
+                          }
+                          return Center(
+                            child: Padding(
+                                padding: EdgeInsets.only(
+                                  right: measurements.leftRightMargin * marginMultiplier,
+                                  left: measurements.leftRightMargin * marginMultiplier,
+                                ),
+                                child: LinearProgressIndicator()),
+                          );
+                        },
+                      ),
+                    )
+                  ],
+                ),
               ),
-            )
+            ),
           ],
         ),
       ),
+    );
+  }
+}
+
+class FlatBackgroundBox extends StatelessWidget {
+  final Widget child;
+
+  FlatBackgroundBox({@required this.child});
+
+  @override
+  build(BuildContext context) {
+    final adaptive = AdaptiveWindow.fromContext(context: context);
+    final measurements = adaptive.getBreakpoint();
+    return Container(
+      padding: EdgeInsets.all(measurements.gutter),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(theme.borderRadius),
+        color: Colors.white,
+      ),
+      child: child,
     );
   }
 }
