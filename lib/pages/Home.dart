@@ -52,10 +52,6 @@ class _WallStreetBetHomePageState extends State<WallStreetBetHomePage> {
     }
   }
 
-  void _resetSelection() {
-    _toggleSelection = [false, false, false];
-  }
-
   void updateWeeklyInterval() {
     setState(() {
       interval = 'week';
@@ -191,14 +187,19 @@ class _WallStreetBetHomePageState extends State<WallStreetBetHomePage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('${_prepareChartTitle(interval)} Index'),
+                        Text(
+                          '${_prepareChartTitle(interval)} Index',
+                          style: theme.headline1,
+                        ),
                         Row(
                           children: [
-                            Text('Gain'),
-                            SizedBox(width: 10),
-                            Text('Loss'),
-                            SizedBox(width: 10),
-                            Text('Total'),
+                            Circle(diameter: 10, color: theme.limeGreen),
+                            SizedBox(width: measurements.gutter/4),
+                            Text('Gain', style: theme.getSubHeadWithColor(theme.limeGreen)),
+                            SizedBox(width: measurements.gutter),
+                            Circle(diameter: 10, color: theme.fireRed),
+                            SizedBox(width: measurements.gutter/4),
+                            Text('Loss', style: theme.getSubHeadWithColor(theme.fireRed)),
                           ],
                         )
                       ],
@@ -230,6 +231,24 @@ class _WallStreetBetHomePageState extends State<WallStreetBetHomePage> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class Circle extends StatelessWidget {
+  final double diameter;
+  final Color color;
+
+  Circle({@required this.diameter, @required this.color});
+
+  build(BuildContext context) {
+    return Container(
+      width: diameter,
+      height: diameter,
+      decoration: BoxDecoration(
+        color: color,
+        shape: BoxShape.circle,
       ),
     );
   }

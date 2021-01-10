@@ -6,7 +6,7 @@ final lightGray = Color(0xFFF1F1F1);
 final lightOrange = Color(0x44FFC746);
 final lightPink = Color(0x44FF8585);
 final lightGreen = Color(0x4461B15A);
-final lightSilver =Color(0x99BBBFCA);
+final lightSilver = Color(0x99BBBFCA);
 final darkSilver = Color(0x99000000);
 final darkOrange = Color(0xFFFF884B);
 final limeGreen = Color(0xFF16C79A);
@@ -25,7 +25,7 @@ final headline1 = TextStyle(
 final headline2 = TextStyle(
   fontFamily: 'Nunito',
   fontSize: baseFontSize * 4,
-  fontWeight: FontWeight.w700,
+  fontWeight: FontWeight.w800,
 );
 
 final headline3 = TextStyle(
@@ -40,9 +40,16 @@ final headline4 = TextStyle(
   fontWeight: FontWeight.w700,
 );
 
+final subhead1 = TextStyle(
+  fontFamily: 'Nunito',
+  fontSize: baseFontSize * 3,
+  fontWeight: FontWeight.w700,
+);
+
 final bodyText = TextStyle(
   fontFamily: 'Nunito',
   fontSize: baseFontSize * 3,
+  color: darkSilver,
   fontWeight: FontWeight.normal,
 );
 
@@ -77,3 +84,12 @@ final mainTheme = ThemeData(
     ),
   ),
 );
+
+TextStyle getSubHeadWithColor(Color color) {
+  return TextStyle(
+    color: color,
+    fontFamily: 'Nunito',
+    fontSize: baseFontSize * 3,
+    fontWeight: FontWeight.w700,
+  );
+}
