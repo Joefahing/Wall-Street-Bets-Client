@@ -6,6 +6,7 @@ final lightGray = Color(0xFFF1F1F1);
 final lightOrange = Color(0x44FFC746);
 final lightPink = Color(0x44FF8585);
 final lightGreen = Color(0x4461B15A);
+final lightSilver = Color(0x99BBBFCA);
 final darkOrange = Color(0xFFFF884B);
 final limeGreen = Color(0xFF16C79A);
 final fireRed = Color(0xFFFF4646);
@@ -29,6 +30,12 @@ final headline2 = TextStyle(
 final headline3 = TextStyle(
   fontFamily: 'Nunito',
   fontSize: baseFontSize * 3.5,
+  fontWeight: FontWeight.w700,
+);
+
+final headline4 = TextStyle(
+  fontFamily: 'Nunito',
+  fontSize: baseFontSize * 3,
   fontWeight: FontWeight.w700,
 );
 

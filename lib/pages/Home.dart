@@ -26,6 +26,7 @@ class _WallStreetBetHomePageState extends State<WallStreetBetHomePage> {
   Future<PostSummary> summary;
   Future<List<Charts.Series>> lineGraphDataSet;
   String interval = 'week';
+  List<bool> _toggleSelection = [false, true, false];
 
   final apiController = APIController();
 
@@ -51,6 +52,10 @@ class _WallStreetBetHomePageState extends State<WallStreetBetHomePage> {
     }
   }
 
+  void _resetSelection() {
+    _toggleSelection = [false, false, false];
+  }
+
   void updateWeeklyInterval() {
     setState(() {
       interval = 'week';
@@ -70,6 +75,24 @@ class _WallStreetBetHomePageState extends State<WallStreetBetHomePage> {
       interval = 'day';
       _prepareAPIData();
     });
+  }
+
+  void updateInterval(index) {
+    final Map<int, String> toggleMap = {0: 'month', 1: 'week', 2: 'day'};
+    final defaultInterval = 'month';
+    final selection = toggleMap.containsKey(index) ? toggleMap[index] : defaultInterval;
+
+    switch (selection) {
+      case 'month':
+        updateMonthlyInterval();
+        break;
+      case 'week':
+        updateWeeklyInterval();
+        break;
+      case 'day':
+        updateDailyInterval();
+        break;
+    }
   }
 
   @override
@@ -94,36 +117,109 @@ class _WallStreetBetHomePageState extends State<WallStreetBetHomePage> {
         child: Column(
           children: [
             FlatBackgroundBox(
-              child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                Flex(
-                  direction: Axis.vertical,
-                  children: [
-                    Text('Wall Street Bets for Fools', style: theme.headline1),
-                    Text('Lose Money With Friends', style: theme.headline3),
-                  ],
-                ),
-                Flex(
-                  direction: Axis.horizontal,
-                  children: [
-                    OutlinedButton(
-                      child: Text(
-                        'MONTH',
-                        style: theme.bodyText,
+              child: LayoutBuilder(
+                builder: (context, constraint) {
+                  final double minWidth = 750;
+                  int crossAxisCount = adaptive.width < minWidth ? 1 : 2;
+                  double itemWidth = constraint.maxWidth / crossAxisCount;
+                  int widgetHeigh = crossAxisCount == 1 ? 65 : 80;
+
+                  return GridView.count(
+                    childAspectRatio: itemWidth / widgetHeigh,
+                    crossAxisCount: crossAxisCount,
+                    primary: false,
+                    shrinkWrap: true,
+                    //mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        //direction: Axis.vertical,
+                        children: [
+                          Text('Wall Street Bets for Fools', style: theme.headline1),
+                          Text('Lose Money With Friends', style: theme.headline3),
+                        ],
                       ),
-                      onPressed: updateMonthlyInterval,
-                    ),
-                    OutlinedButton(
-                      child: Text('WEEK'),
-                      onPressed: updateWeeklyInterval,
-                    ),
-                    OutlinedButton(
-                      child: Text('DAY'),
-                      onPressed: updateDailyInterval,
-                    ),
-                  ],
-                )
-              ]),
+                      Align(
+                        alignment: Alignment.center,
+                        child: Row(
+                          mainAxisAlignment: crossAxisCount == 1
+                              ? MainAxisAlignment.center
+                              : MainAxisAlignment.spaceBetween,
+                          children: [
+                            SizedBox(width: 1),
+                            Container(
+                              padding: EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: theme.lightGray,
+                                borderRadius: BorderRadius.circular(theme.borderRadius),
+                              ),
+                              child: Row(
+                                //direction: Axis.horizontal,
+                                children: [
+                                  IntervalFlatButton(
+                                      title: 'Monthly',
+                                      color: interval == 'month' ? Colors.white : theme.lightGray,
+                                      onPressed: updateMonthlyInterval),
+                                  SizedBox(width: measurements.gutter / 2),
+                                  IntervalFlatButton(
+                                      title: 'Weekly',
+                                      color: interval == 'week' ? Colors.white : theme.lightGray,
+                                      onPressed: updateWeeklyInterval),
+                                  SizedBox(width: measurements.gutter / 2),
+                                  IntervalFlatButton(
+                                      title: 'Daily',
+                                      color: interval == 'day' ? Colors.white : theme.lightGray,
+                                      onPressed: updateDailyInterval),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
+                  );
+                },
+              ),
             ),
+            // FlatBackgroundBox(
+            //   child: Row(
+            //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //     children: [
+            //       Flex(
+            //         direction: Axis.vertical,
+            //         children: [
+            //           Text('Wall Street Bets for Fools', style: theme.headline1),
+            //           Text('Lose Money With Friends', style: theme.headline3),
+            //         ],
+            //       ),
+            //       Container(
+            //         padding: EdgeInsets.all(10),
+            //         decoration: BoxDecoration(
+            //           color: theme.lightGray,
+            //           borderRadius: BorderRadius.circular(theme.borderRadius),
+            //         ),
+            //         child: Flex(
+            //           direction: Axis.horizontal,
+            //           children: [
+            //             IntervalFlatButton(
+            //                 title: 'Monthly',
+            //                 color: interval == 'month' ? Colors.white : theme.lightGray,
+            //                 onPressed: updateMonthlyInterval),
+            //             SizedBox(width: measurements.gutter/2),
+            //             IntervalFlatButton(
+            //                 title: 'Weekly',
+            //                 color: interval == 'week' ? Colors.white : theme.lightGray,
+            //                 onPressed: updateWeeklyInterval),
+            //             SizedBox(width: measurements.gutter/2),
+            //             IntervalFlatButton(
+            //                 title: 'Daily',
+            //                 color: interval == 'day' ? Colors.white : theme.lightGray,
+            //                 onPressed: updateDailyInterval),
+            //           ],
+            //         ),
+            //       )
+            //     ],
+            //   ),
+            // ),
             SizedBox(height: measurements.gutter / 2, width: measurements.gutter),
             APIDataSlicers(
               summary: summary,
@@ -179,6 +275,24 @@ class _WallStreetBetHomePageState extends State<WallStreetBetHomePage> {
         ),
       ),
     );
+  }
+}
+
+class IntervalFlatButton extends StatelessWidget {
+  final String title;
+  final Color color;
+  final void Function() onPressed;
+
+  IntervalFlatButton({@required this.title, this.color, @required this.onPressed});
+
+  @override
+  build(BuildContext context) {
+    return FlatButton(
+        child: Text(title, style: theme.headline4),
+        color: color,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(theme.borderRadius / 2)),
+        onPressed: onPressed,
+        hoverColor: theme.lightSilver);
   }
 }
 
