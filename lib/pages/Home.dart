@@ -129,10 +129,8 @@ class _WallStreetBetHomePageState extends State<WallStreetBetHomePage> {
                     crossAxisCount: crossAxisCount,
                     primary: false,
                     shrinkWrap: true,
-                    //mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Column(
-                        //direction: Axis.vertical,
                         children: [
                           Text('Wall Street Bets for Fools', style: theme.headline1),
                           Text('Lose Money With Friends', style: theme.headline3),
@@ -153,7 +151,6 @@ class _WallStreetBetHomePageState extends State<WallStreetBetHomePage> {
                                 borderRadius: BorderRadius.circular(theme.borderRadius),
                               ),
                               child: Row(
-                                //direction: Axis.horizontal,
                                 children: [
                                   IntervalFlatButton(
                                       title: 'Monthly',
