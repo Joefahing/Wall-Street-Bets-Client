@@ -194,11 +194,11 @@ class _WallStreetBetHomePageState extends State<WallStreetBetHomePage> {
                         Row(
                           children: [
                             Circle(diameter: 10, color: theme.limeGreen),
-                            SizedBox(width: measurements.gutter/4),
+                            SizedBox(width: measurements.gutter / 4),
                             Text('Gain', style: theme.getSubHeadWithColor(theme.limeGreen)),
                             SizedBox(width: measurements.gutter),
                             Circle(diameter: 10, color: theme.fireRed),
-                            SizedBox(width: measurements.gutter/4),
+                            SizedBox(width: measurements.gutter / 4),
                             Text('Loss', style: theme.getSubHeadWithColor(theme.fireRed)),
                           ],
                         )
