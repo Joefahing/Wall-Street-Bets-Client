@@ -177,46 +177,6 @@ class _WallStreetBetHomePageState extends State<WallStreetBetHomePage> {
                 },
               ),
             ),
-            // FlatBackgroundBox(
-            //   child: Row(
-            //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //     children: [
-            //       Flex(
-            //         direction: Axis.vertical,
-            //         children: [
-            //           Text('Wall Street Bets for Fools', style: theme.headline1),
-            //           Text('Lose Money With Friends', style: theme.headline3),
-            //         ],
-            //       ),
-            //       Container(
-            //         padding: EdgeInsets.all(10),
-            //         decoration: BoxDecoration(
-            //           color: theme.lightGray,
-            //           borderRadius: BorderRadius.circular(theme.borderRadius),
-            //         ),
-            //         child: Flex(
-            //           direction: Axis.horizontal,
-            //           children: [
-            //             IntervalFlatButton(
-            //                 title: 'Monthly',
-            //                 color: interval == 'month' ? Colors.white : theme.lightGray,
-            //                 onPressed: updateMonthlyInterval),
-            //             SizedBox(width: measurements.gutter/2),
-            //             IntervalFlatButton(
-            //                 title: 'Weekly',
-            //                 color: interval == 'week' ? Colors.white : theme.lightGray,
-            //                 onPressed: updateWeeklyInterval),
-            //             SizedBox(width: measurements.gutter/2),
-            //             IntervalFlatButton(
-            //                 title: 'Daily',
-            //                 color: interval == 'day' ? Colors.white : theme.lightGray,
-            //                 onPressed: updateDailyInterval),
-            //           ],
-            //         ),
-            //       )
-            //     ],
-            //   ),
-            // ),
             SizedBox(height: measurements.gutter / 2, width: measurements.gutter),
             APIDataSlicers(
               summary: summary,
