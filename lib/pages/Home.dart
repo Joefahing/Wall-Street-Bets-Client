@@ -117,45 +117,109 @@ class _WallStreetBetHomePageState extends State<WallStreetBetHomePage> {
         child: Column(
           children: [
             FlatBackgroundBox(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Flex(
-                    direction: Axis.vertical,
+              child: LayoutBuilder(
+                builder: (context, constraint) {
+                  final double minWidth = 750;
+                  int crossAxisCount = adaptive.width < minWidth ? 1 : 2;
+                  double itemWidth = constraint.maxWidth / crossAxisCount;
+                  int widgetHeigh = crossAxisCount == 1 ? 65 : 80;
+
+                  return GridView.count(
+                    childAspectRatio: itemWidth / widgetHeigh,
+                    crossAxisCount: crossAxisCount,
+                    primary: false,
+                    shrinkWrap: true,
+                    //mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Wall Street Bets for Fools', style: theme.headline1),
-                      Text('Lose Money With Friends', style: theme.headline3),
+                      Column(
+                        //direction: Axis.vertical,
+                        children: [
+                          Text('Wall Street Bets for Fools', style: theme.headline1),
+                          Text('Lose Money With Friends', style: theme.headline3),
+                        ],
+                      ),
+                      Align(
+                        alignment: Alignment.center,
+                        child: Row(
+                          mainAxisAlignment: crossAxisCount == 1
+                              ? MainAxisAlignment.center
+                              : MainAxisAlignment.spaceBetween,
+                          children: [
+                            SizedBox(width: 1),
+                            Container(
+                              padding: EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: theme.lightGray,
+                                borderRadius: BorderRadius.circular(theme.borderRadius),
+                              ),
+                              child: Row(
+                                //direction: Axis.horizontal,
+                                children: [
+                                  IntervalFlatButton(
+                                      title: 'Monthly',
+                                      color: interval == 'month' ? Colors.white : theme.lightGray,
+                                      onPressed: updateMonthlyInterval),
+                                  SizedBox(width: measurements.gutter / 2),
+                                  IntervalFlatButton(
+                                      title: 'Weekly',
+                                      color: interval == 'week' ? Colors.white : theme.lightGray,
+                                      onPressed: updateWeeklyInterval),
+                                  SizedBox(width: measurements.gutter / 2),
+                                  IntervalFlatButton(
+                                      title: 'Daily',
+                                      color: interval == 'day' ? Colors.white : theme.lightGray,
+                                      onPressed: updateDailyInterval),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
                     ],
-                  ),
-                  Container(
-                    padding: EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: theme.lightGray,
-                      borderRadius: BorderRadius.circular(theme.borderRadius),
-                    ),
-                    child: Flex(
-                      direction: Axis.horizontal,
-                      children: [
-                        IntervalFlatButton(
-                            title: 'Monthly',
-                            color: interval == 'month' ? Colors.white : theme.lightGray,
-                            onPressed: updateMonthlyInterval),
-                        SizedBox(width: measurements.gutter),
-                        IntervalFlatButton(
-                            title: 'Weekly',
-                            color: interval == 'week' ? Colors.white : theme.lightGray,
-                            onPressed: updateWeeklyInterval),
-                        SizedBox(width: measurements.gutter),
-                        IntervalFlatButton(
-                            title: 'Daily',
-                            color: interval == 'day' ? Colors.white : theme.lightGray,
-                            onPressed: updateDailyInterval),
-                      ],
-                    ),
-                  )
-                ],
+                  );
+                },
               ),
             ),
+            // FlatBackgroundBox(
+            //   child: Row(
+            //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //     children: [
+            //       Flex(
+            //         direction: Axis.vertical,
+            //         children: [
+            //           Text('Wall Street Bets for Fools', style: theme.headline1),
+            //           Text('Lose Money With Friends', style: theme.headline3),
+            //         ],
+            //       ),
+            //       Container(
+            //         padding: EdgeInsets.all(10),
+            //         decoration: BoxDecoration(
+            //           color: theme.lightGray,
+            //           borderRadius: BorderRadius.circular(theme.borderRadius),
+            //         ),
+            //         child: Flex(
+            //           direction: Axis.horizontal,
+            //           children: [
+            //             IntervalFlatButton(
+            //                 title: 'Monthly',
+            //                 color: interval == 'month' ? Colors.white : theme.lightGray,
+            //                 onPressed: updateMonthlyInterval),
+            //             SizedBox(width: measurements.gutter/2),
+            //             IntervalFlatButton(
+            //                 title: 'Weekly',
+            //                 color: interval == 'week' ? Colors.white : theme.lightGray,
+            //                 onPressed: updateWeeklyInterval),
+            //             SizedBox(width: measurements.gutter/2),
+            //             IntervalFlatButton(
+            //                 title: 'Daily',
+            //                 color: interval == 'day' ? Colors.white : theme.lightGray,
+            //                 onPressed: updateDailyInterval),
+            //           ],
+            //         ),
+            //       )
+            //     ],
+            //   ),
+            // ),
             SizedBox(height: measurements.gutter / 2, width: measurements.gutter),
             APIDataSlicers(
               summary: summary,
@@ -217,7 +281,7 @@ class _WallStreetBetHomePageState extends State<WallStreetBetHomePage> {
 class IntervalFlatButton extends StatelessWidget {
   final String title;
   final Color color;
-  void Function() onPressed;
+  final void Function() onPressed;
 
   IntervalFlatButton({@required this.title, this.color, @required this.onPressed});
 
