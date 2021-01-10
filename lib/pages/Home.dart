@@ -277,7 +277,7 @@ class APIDataSlicers extends StatelessWidget {
   final Future<PostSummary> summary;
   final double width;
   final double gutter;
-  final double textFieldHeigh = 80;
+  final double textFieldHeigh = 100;
   final double minWidth = 750;
   final double percentage = 100.0;
   final String bullIcon = '../assets/images/bull_icon.png';
