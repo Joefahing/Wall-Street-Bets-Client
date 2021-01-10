@@ -299,9 +299,9 @@ class APIDataSlicers extends StatelessWidget {
   final double textFieldHeigh = 100;
   final double minWidth = 750;
   final double percentage = 100.0;
-  final String bullIcon = 'images/bull_icon.png';
-  final String bearIcon = 'images/bear_icon.png';
-  final String kangarooIcon = 'images/kangaroo_icon.png';
+  final String bullIcon = 'assets/images/bull_icon.png';
+  final String bearIcon = 'assets/images/bear_icon.png';
+  final String kangarooIcon = 'assets/images/kangaroo_icon.png';
 
   APIDataSlicers({this.summary, this.width, this.gutter});
 
