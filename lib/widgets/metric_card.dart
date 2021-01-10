@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import '../components/theme_data.dart';
 
 class MetricCard extends StatelessWidget {
   final String title;
   final int total;
   final double rate;
   final String imageUrl;
-  Color color = Colors.white;
+  final Color color;
 
   MetricCard(
       {@required this.title,
@@ -17,20 +18,23 @@ class MetricCard extends StatelessWidget {
   Widget build(context) {
     return Card(
       color: color,
-      child: Row(
-        children: [
-          Image.asset(imageUrl),
-          Expanded(
-            child: Column(
+      child: Padding(
+        padding: EdgeInsets.all(5),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(imageUrl, width: 50,),
+            SizedBox(width: 10,),
+            Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('$title'),
-                Text('Number of Post $total'),
-                Text('Growth Rate ${rate.toStringAsFixed(1)}%'),
+                Text('$title', style: headline2,),
+                Text('Post: $total', style: bodyText2,),
+                Text('Growth: ${rate.toStringAsFixed(1)}%', style: bodyText2,),
               ],
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
