@@ -26,7 +26,6 @@ class _WallStreetBetHomePageState extends State<WallStreetBetHomePage> {
   Future<PostSummary> summary;
   Future<List<Charts.Series>> lineGraphDataSet;
   String interval = 'week';
-  List<bool> _toggleSelection = [false, true, false];
 
   final apiController = APIController();
 
@@ -106,130 +105,146 @@ class _WallStreetBetHomePageState extends State<WallStreetBetHomePage> {
     return Scaffold(
       body: Container(
         margin: EdgeInsets.only(
-            right: measurements.leftRightMargin,
-            left: measurements.leftRightMargin,
-            top: measurements.topDownMargin,
-            bottom: measurements.topDownMargin),
-        child: Column(
-          children: [
-            FlatBackgroundBox(
-              child: LayoutBuilder(
-                builder: (context, constraint) {
-                  final double minWidth = 750;
-                  int crossAxisCount = adaptive.width < minWidth ? 1 : 2;
-                  double itemWidth = constraint.maxWidth / crossAxisCount;
-                  int widgetHeigh = crossAxisCount == 1 ? 65 : 80;
+          right: measurements.leftRightMargin,
+          left: measurements.leftRightMargin,
+        ),
+        child: Scrollbar(
+          child: SingleChildScrollView(
+            child: Container(
+              margin: EdgeInsets.only(
+                top: measurements.topDownMargin,
+                bottom: measurements.topDownMargin,
+              ),
+              child: Column(
+                children: [
+                  FlatBackgroundBox(
+                    child: LayoutBuilder(
+                      builder: (context, constraint) {
+                        final double minWidth = 750;
+                        int crossAxisCount = adaptive.width < minWidth ? 1 : 2;
+                        double itemWidth = constraint.maxWidth / crossAxisCount;
+                        int widgetHeigh = crossAxisCount == 1 ? 65 : 80;
 
-                  return GridView.count(
-                    childAspectRatio: itemWidth / widgetHeigh,
-                    crossAxisCount: crossAxisCount,
-                    primary: false,
-                    shrinkWrap: true,
-                    children: [
-                      Column(
-                        children: [
-                          Text('Wall Street Bets for Fools', style: theme.headline1),
-                          Text('Lose Money With Friends', style: theme.headline3),
-                        ],
-                      ),
-                      Align(
-                        alignment: Alignment.center,
-                        child: Row(
-                          mainAxisAlignment: crossAxisCount == 1
-                              ? MainAxisAlignment.center
-                              : MainAxisAlignment.spaceBetween,
+                        return GridView.count(
+                          childAspectRatio: itemWidth / widgetHeigh,
+                          crossAxisCount: crossAxisCount,
+                          primary: false,
+                          shrinkWrap: true,
                           children: [
-                            SizedBox(width: 1),
-                            Container(
-                              padding: EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: theme.lightGray,
-                                borderRadius: BorderRadius.circular(theme.borderRadius),
-                              ),
+                            Column(
+                              children: [
+                                Text('Wall Street Bets for Fools', style: theme.headline1),
+                                Text('Lose Money With Friends', style: theme.headline3),
+                              ],
+                            ),
+                            Align(
+                              alignment: Alignment.center,
                               child: Row(
+                                mainAxisAlignment: crossAxisCount == 1
+                                    ? MainAxisAlignment.center
+                                    : MainAxisAlignment.spaceBetween,
                                 children: [
-                                  IntervalFlatButton(
-                                      title: 'Monthly',
-                                      color: interval == 'month' ? Colors.white : theme.lightGray,
-                                      onPressed: updateMonthlyInterval),
-                                  SizedBox(width: measurements.gutter / 2),
-                                  IntervalFlatButton(
-                                      title: 'Weekly',
-                                      color: interval == 'week' ? Colors.white : theme.lightGray,
-                                      onPressed: updateWeeklyInterval),
-                                  SizedBox(width: measurements.gutter / 2),
-                                  IntervalFlatButton(
-                                      title: 'Daily',
-                                      color: interval == 'day' ? Colors.white : theme.lightGray,
-                                      onPressed: updateDailyInterval),
+                                  SizedBox(width: 1),
+                                  Container(
+                                    padding: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      color: theme.lightGray,
+                                      borderRadius: BorderRadius.circular(theme.borderRadius),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        IntervalFlatButton(
+                                            title: 'Monthly',
+                                            color: interval == 'month'
+                                                ? Colors.white
+                                                : theme.lightGray,
+                                            onPressed: updateMonthlyInterval),
+                                        SizedBox(width: measurements.gutter / 2),
+                                        IntervalFlatButton(
+                                            title: 'Weekly',
+                                            color:
+                                                interval == 'week' ? Colors.white : theme.lightGray,
+                                            onPressed: updateWeeklyInterval),
+                                        SizedBox(width: measurements.gutter / 2),
+                                        IntervalFlatButton(
+                                            title: 'Daily',
+                                            color:
+                                                interval == 'day' ? Colors.white : theme.lightGray,
+                                            onPressed: updateDailyInterval),
+                                      ],
+                                    ),
+                                  ),
                                 ],
                               ),
-                            ),
+                            )
                           ],
-                        ),
-                      )
-                    ],
-                  );
-                },
-              ),
-            ),
-            SizedBox(height: measurements.gutter / 2, width: measurements.gutter),
-            APIDataSlicers(
-              summary: summary,
-              width: adaptive.width,
-              gutter: measurements.gutter,
-            ),
-            SizedBox(height: measurements.gutter / 2, width: measurements.gutter),
-            Expanded(
-              child: FlatBackgroundBox(
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          '${_prepareChartTitle(interval)} Index',
-                          style: theme.headline1,
-                        ),
-                        Row(
-                          children: [
-                            Circle(diameter: 10, color: theme.limeGreen),
-                            SizedBox(width: measurements.gutter / 4),
-                            Text('Gain', style: theme.getSubHeadWithColor(theme.limeGreen)),
-                            SizedBox(width: measurements.gutter),
-                            Circle(diameter: 10, color: theme.fireRed),
-                            SizedBox(width: measurements.gutter / 4),
-                            Text('Loss', style: theme.getSubHeadWithColor(theme.fireRed)),
-                          ],
-                        )
-                      ],
+                        );
+                      },
                     ),
-                    Expanded(
-                      child: FutureBuilder(
-                        future: lineGraphDataSet,
-                        builder: (BuildContext context, future) {
-                          final marginMultiplier = 3;
-                          if (future.hasData) {
-                            return WallStreetBetTimeSeriesChart(series: future.data);
-                          } else if (future.hasError) {
-                            return Text("${future.error}");
-                          }
-                          return Center(
-                            child: Padding(
-                                padding: EdgeInsets.only(
-                                  right: measurements.leftRightMargin * marginMultiplier,
-                                  left: measurements.leftRightMargin * marginMultiplier,
-                                ),
-                                child: LinearProgressIndicator()),
-                          );
-                        },
+                  ),
+                  SizedBox(height: measurements.gutter / 2, width: measurements.gutter),
+                  APIDataSlicers(
+                    summary: summary,
+                    width: adaptive.width,
+                    gutter: measurements.gutter,
+                  ),
+                  SizedBox(height: measurements.gutter / 2, width: measurements.gutter),
+                  Container(
+                    height: 2000,
+                    constraints: BoxConstraints(minHeight: 300, maxHeight: 800),
+                    child: FlatBackgroundBox(
+                      child: Flex(
+                        direction: Axis.vertical,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                '${_prepareChartTitle(interval)} Index',
+                                style: theme.headline1,
+                              ),
+                              Row(
+                                children: [
+                                  Circle(diameter: 10, color: theme.limeGreen),
+                                  SizedBox(width: measurements.gutter / 4),
+                                  Text('Gain', style: theme.getSubHeadWithColor(theme.limeGreen)),
+                                  SizedBox(width: measurements.gutter),
+                                  Circle(diameter: 10, color: theme.fireRed),
+                                  SizedBox(width: measurements.gutter / 4),
+                                  Text('Loss', style: theme.getSubHeadWithColor(theme.fireRed)),
+                                ],
+                              )
+                            ],
+                          ),
+                          Expanded(
+                            child: FutureBuilder(
+                              future: lineGraphDataSet,
+                              builder: (BuildContext context, future) {
+                                final marginMultiplier = 3;
+                                if (future.hasData) {
+                                  return WallStreetBetTimeSeriesChart(series: future.data);
+                                } else if (future.hasError) {
+                                  return Text("${future.error}");
+                                }
+                                return Center(
+                                  child: Padding(
+                                      padding: EdgeInsets.only(
+                                        right: measurements.leftRightMargin * marginMultiplier,
+                                        left: measurements.leftRightMargin * marginMultiplier,
+                                      ),
+                                      child: LinearProgressIndicator()),
+                                );
+                              },
+                            ),
+                          )
+                        ],
                       ),
-                    )
-                  ],
-                ),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
+          ),
         ),
       ),
     );
