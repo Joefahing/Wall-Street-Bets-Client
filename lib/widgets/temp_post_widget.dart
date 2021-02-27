@@ -3,11 +3,14 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as Charts;
 
+import '../model/post.dart';
+import '../model/summary.dart';
 import '../controllers/APIController.dart';
 import '../components/adaptive.dart';
 import '../components/theme_data.dart' as theme;
 
 import '../widgets/line_chart.dart';
+import '../widgets/metric_card.dart';
 
 class WallStreetBetHomePage extends StatefulWidget {
   WallStreetBetHomePage({Key key, this.title}) : super(key: key);
@@ -19,14 +22,32 @@ class WallStreetBetHomePage extends StatefulWidget {
 }
 
 class _WallStreetBetHomePageState extends State<WallStreetBetHomePage> {
-  final apiController = APIController();
+  ///These variable will be retired and move to their own view later
+  //Future<List<Post>> posts;
+  Future<PostSummary> summary;
+  ////////////////////////////
+
+  Future<List<Charts.Series>> lineGraphDataSet;
   String interval = 'week';
-  Future<List<Charts.Series<dynamic, DateTime>>> indexDataSeries;
+
+  final apiController = APIController();
+
+  ///This helper method refetches data from API base on current interval and set
+  ///them to instance variables used to power the data and display
+  void _preparePostData() {
+    final String postRoute = "http://wall-street-bet-server.herokuapp.com/post/profit/";
+    final apiResponse = apiController.fetchFromEndPoint(route: postRoute, time: interval);
+
+    summary = apiController.getSummary(response: apiResponse);
+    //posts = apiController.getPosts(response: apiResponse);
+    // lineGraphDataSet = apiController.getGainLossDataPoint(response: apiResponse);
+  }
 
   void _prepareIndexData() {
     final String indexRoute = "http://wall-street-bet-server.herokuapp.com/post/index/";
     final indexAPIResponse = apiController.fetchFromEndPoint(route: indexRoute, time: interval);
-    indexDataSeries = apiController.getIndexGraphData(response: indexAPIResponse);
+
+    lineGraphDataSet = apiController.getIndexGraphDataSet(response: indexAPIResponse);
   }
 
   String _prepareChartTitle(String interval) {
@@ -45,21 +66,21 @@ class _WallStreetBetHomePageState extends State<WallStreetBetHomePage> {
   void updateWeeklyInterval() {
     setState(() {
       interval = 'week';
-      _prepareIndexData();
+      _preparePostData();
     });
   }
 
   void updateMonthlyInterval() {
     setState(() {
       interval = 'month';
-      _prepareIndexData();
+      _preparePostData();
     });
   }
 
   void updateDailyInterval() {
     setState(() {
       interval = 'day';
-      _prepareIndexData();
+      _preparePostData();
     });
   }
 
@@ -84,18 +105,14 @@ class _WallStreetBetHomePageState extends State<WallStreetBetHomePage> {
   @override
   void initState() {
     super.initState();
+
+    _preparePostData();
     _prepareIndexData();
   }
 
   @override
   Widget build(BuildContext context) {
     final adaptive = AdaptiveWindow.fromContext(context: context);
-    final screenHeigh = MediaQuery.of(context).size.height;
-    final chartHeighFactor = 8 / 10;
-    final double minChartHeigh = 500;
-    final double maxChartHeigh = screenHeigh * chartHeighFactor < minChartHeigh
-        ? minChartHeigh
-        : screenHeigh * chartHeighFactor;
     final measurements = adaptive.getBreakpoint();
 
     return Scaffold(
@@ -178,8 +195,15 @@ class _WallStreetBetHomePageState extends State<WallStreetBetHomePage> {
                     ),
                   ),
                   SizedBox(height: measurements.gutter / 2, width: measurements.gutter),
+                  APIDataSlicers(
+                    summary: summary,
+                    width: adaptive.width,
+                    gutter: measurements.gutter,
+                  ),
+                  SizedBox(height: measurements.gutter / 2, width: measurements.gutter),
                   Container(
-                    constraints: BoxConstraints(minHeight: minChartHeigh, maxHeight: maxChartHeigh),
+                    height: 2000,
+                    constraints: BoxConstraints(minHeight: 300, maxHeight: 800),
                     child: FlatBackgroundBox(
                       child: Flex(
                         direction: Axis.vertical,
@@ -191,11 +215,22 @@ class _WallStreetBetHomePageState extends State<WallStreetBetHomePage> {
                                 '${_prepareChartTitle(interval)} Index',
                                 style: theme.headline1,
                               ),
+                              Row(
+                                children: [
+                                  Circle(diameter: 10, color: theme.limeGreen),
+                                  SizedBox(width: measurements.gutter / 4),
+                                  Text('Gain', style: theme.getSubHeadWithColor(theme.limeGreen)),
+                                  SizedBox(width: measurements.gutter),
+                                  Circle(diameter: 10, color: theme.fireRed),
+                                  SizedBox(width: measurements.gutter / 4),
+                                  Text('Loss', style: theme.getSubHeadWithColor(theme.fireRed)),
+                                ],
+                              )
                             ],
                           ),
                           Expanded(
                             child: FutureBuilder(
-                              future: indexDataSeries,
+                              future: lineGraphDataSet,
                               builder: (BuildContext context, future) {
                                 final marginMultiplier = 3;
                                 if (future.hasData) {
@@ -281,5 +316,70 @@ class FlatBackgroundBox extends StatelessWidget {
       ),
       child: child,
     );
+  }
+}
+
+class APIDataSlicers extends StatelessWidget {
+  final Future<PostSummary> summary;
+  final double width;
+  final double gutter;
+  final double textFieldHeigh = 100;
+  final double minWidth = 750;
+  final double percentage = 100.0;
+  final String bullIcon = 'assets/images/bull_icon.png';
+  final String bearIcon = 'assets/images/bear_icon.png';
+  final String kangarooIcon = 'assets/images/kangaroo_icon.png';
+
+  APIDataSlicers({this.summary, this.width, this.gutter});
+
+  build(BuildContext context) {
+    return FutureBuilder<PostSummary>(
+        future: summary,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return LayoutBuilder(
+              builder: (context, constraint) {
+                int crossAxisCount = width < minWidth ? 1 : 3;
+                double itemWidth = constraint.maxWidth / crossAxisCount;
+
+                return GridView.count(
+                  primary: false,
+                  shrinkWrap: true,
+                  childAspectRatio: itemWidth / textFieldHeigh,
+                  crossAxisCount: crossAxisCount,
+                  crossAxisSpacing: gutter,
+                  mainAxisSpacing: gutter,
+                  children: [
+                    MetricCard(
+                      title: 'Gain',
+                      rate: snapshot.data.gainGrowthRate * percentage,
+                      total: snapshot.data.gain,
+                      imageUrl: bullIcon,
+                      color: theme.lightGreen,
+                    ),
+                    MetricCard(
+                      title: 'Loss',
+                      rate: snapshot.data.lossGrowthRate * percentage,
+                      total: snapshot.data.loss,
+                      imageUrl: bearIcon,
+                      color: theme.lightPink,
+                    ),
+                    MetricCard(
+                        title: 'Difference',
+                        rate: snapshot.data.differenceGrowthRate * percentage,
+                        total: snapshot.data.difference,
+                        imageUrl: kangarooIcon,
+                        color: theme.lightOrange)
+                  ],
+                );
+              },
+            );
+          } else if (snapshot.hasError) {
+            return Text("${snapshot.error}");
+          }
+          return SizedBox(
+            height: 30,
+          );
+        });
   }
 }

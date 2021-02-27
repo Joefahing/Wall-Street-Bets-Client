@@ -4,16 +4,27 @@ import 'dart:async';
 import 'package:charts_flutter/flutter.dart' as Charts;
 import 'package:http/http.dart' as HTTP;
 
-import 'package:wsb_dashboard/model/post.dart';
-import 'package:wsb_dashboard/model/summary.dart';
+import '../model/post.dart';
+import '../model/summary.dart';
+import '../model/index.dart';
 
 /// This class is responsible for handling all the methods use in process data received from API
 /// anything from HTTP fetching to processing json into structure suitable for widget consumption
 
 class APIController {
-  Future<Map<String, dynamic>> fetchPosts(String timeLength) async {
-    final apiResponse = await HTTP.get(
-        "https://wall-street-bet-server.herokuapp.com/stats/gain_loss/post?interval=$timeLength");
+  Charts.Series<dynamic, DateTime> convertDataToChartSeries(
+      {List<TimeSeriesPosts> data, dynamic color}) {
+    return new Charts.Series<TimeSeriesPosts, DateTime>(
+      id: 'Index ',
+      colorFn: (_, __) => color,
+      domainFn: (TimeSeriesPosts data, _) => data.time,
+      measureFn: (TimeSeriesPosts data, _) => data.totalPosts,
+      data: data,
+    );
+  }
+
+  Future<Map<String, dynamic>> fetchFromEndPoint({String route, String time}) async {
+    final apiResponse = await HTTP.get("$route$time");
 
     if (apiResponse.statusCode != 200) throw Exception('Failed to fetch posts from API end point');
 
@@ -21,10 +32,30 @@ class APIController {
     return unprocessJson;
   }
 
-  Future<PostSummary> getSummary({Future<Map<String, dynamic>> response}) async {
-    PostSummary summary =
-        await response.then((json) => PostSummary.fromJson(json: json['summary']));
-    return summary;
+  ///this function is responsible for converting points json post into useable format for chat
+  Future<List<Charts.Series>> getGainLossDataPoint({Future<Map<String, dynamic>> response}) async {
+    final posts = await getPosts(response: response);
+    final gainData = _getTimeTotalByFlair(posts: posts, searchFlair: 'Gain');
+    final lossData = _getTimeTotalByFlair(posts: posts, searchFlair: 'Loss');
+    final gainChartData = convertDataToChartSeries(data: gainData, color: ChartColor.green);
+    final lossChartData = convertDataToChartSeries(data: lossData, color: ChartColor.red);
+    final chartDataSet = [gainChartData, lossChartData];
+
+    return chartDataSet;
+  }
+
+  Future<List<Index>> getIndex({Future<Map<String, dynamic>> response}) async {
+    final List<Index> indexes = await Index.convertJsonToList(response: response);
+    return indexes;
+  }
+
+  Future<List<Charts.Series<dynamic, DateTime>>> getIndexGraphData(
+      {Future<Map<String, dynamic>> response}) async {
+    final color = ChartColor.red;
+    final indexes = await Index.convertJsonToList(response: response);
+    final timeSeriesIndexes = _convertIndexToTimeSeries(indexes: indexes);
+    final indexChartData = convertDataToChartSeries(data: timeSeriesIndexes, color: color);
+    return [indexChartData];
   }
 
   ///fromJson factory method from Post class is used there to deserilize json post
@@ -39,26 +70,32 @@ class APIController {
     return posts;
   }
 
-  Future<List<Charts.Series>> getGainLossDataPoint({Future<Map<String, dynamic>> response}) async {
-    final posts = await getPosts(response: response);
-    final gainData = _getTimeTotalByFlair(posts: posts, searchFlair: 'Gain');
-    final lossData = _getTimeTotalByFlair(posts: posts, searchFlair: 'Loss');
-    final gainChartData = convertDataToChartSeries(posts: gainData, color: ChartColor.green);
-    final lossChartData = convertDataToChartSeries(posts: lossData, color: ChartColor.red);
-    final chartDataSet = [gainChartData, lossChartData];
-
-    return chartDataSet;
+  Future<PostSummary> getSummary({Future<Map<String, dynamic>> response}) async {
+    PostSummary summary =
+        await response.then((json) => PostSummary.fromJson(json: json['summary']));
+    return summary;
   }
 
-  Charts.Series<dynamic, DateTime> convertDataToChartSeries(
-      {List<TimeSeriesPosts> posts, dynamic color}) {
-    return new Charts.Series<TimeSeriesPosts, DateTime>(
-      id: 'Post',
-      colorFn: (_, __) => color,
-      domainFn: (TimeSeriesPosts posts, _) => posts.time,
-      measureFn: (TimeSeriesPosts posts, _) => posts.totalPosts,
-      data: posts,
-    );
+  List<TimeSeriesPosts> _convertTimeSeriesMapToList(Map<String, int> map) {
+    final List<TimeSeriesPosts> convertedSeries = [];
+
+    map.forEach((date, count) =>
+        convertedSeries.add(TimeSeriesPosts(time: DateTime.parse(date), totalPosts: count)));
+
+    return convertedSeries;
+  }
+
+  ///Flutter chart requires a format that provides the library with points and time. Models that are plotted in charts are converted to TimeSeries for
+  ///the library to be more universally accessible
+  List<TimeSeriesPosts> _convertIndexToTimeSeries({List<Index> indexes}) {
+    final List<TimeSeriesPosts> convertedSeries = [];
+
+    indexes.forEach((index) {
+      final newSeries = TimeSeriesPosts(time: index.dateCreated, totalPosts: index.points);
+      convertedSeries.add(newSeries);
+    });
+
+    return convertedSeries;
   }
 
   ///Gain and Loss posts are needed to be aggregate by date and be used in graph
@@ -69,14 +106,6 @@ class APIController {
 
     timeTotalList.sort((TimeSeriesPosts a, TimeSeriesPosts b) => a.time.compareTo(b.time));
     return timeTotalList;
-  }
-
-  List<TimeSeriesPosts> _convertTimeSeriesMapToList(Map<String, int> map) {
-    final List<TimeSeriesPosts> convertedSeries = [];
-
-    map.forEach((date, count) => convertedSeries.add(TimeSeriesPosts(DateTime.parse(date), count)));
-
-    return convertedSeries;
   }
 
   Map<String, int> _populateTimeSeriesMap(List<Post> posts, flair) {
@@ -105,5 +134,5 @@ class TimeSeriesPosts {
   final DateTime time;
   final int totalPosts;
 
-  TimeSeriesPosts(this.time, this.totalPosts);
+  TimeSeriesPosts({this.time, this.totalPosts});
 }
