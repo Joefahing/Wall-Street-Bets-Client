@@ -10,7 +10,7 @@ class WallStreetBetTimeSeriesChart extends StatelessWidget {
   Widget build(BuildContext context) {
     return new Charts.TimeSeriesChart(
       series,
-      animate: false,
+      animate: true,
       dateTimeFactory: const Charts.UTCDateTimeFactory(),
     );
   }
