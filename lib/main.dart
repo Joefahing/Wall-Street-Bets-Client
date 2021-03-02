@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:wsb_dashboard/pages/Home.dart';
+import 'package:wsb_dashboard/pages/home/Home.dart';
 import './components/theme_data.dart';
 
 void main() {

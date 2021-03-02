@@ -3,11 +3,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as Charts;
 
-import '../controllers/APIController.dart';
-import '../components/adaptive.dart';
-import '../components/theme_data.dart' as theme;
+import '../../controllers/APIController.dart';
+import '../../components/adaptive.dart';
+import '../../components/theme_data.dart' as theme;
 
-import '../widgets/line_chart.dart';
+import '../../widgets/line_chart.dart';
 
 class WallStreetBetHomePage extends StatefulWidget {
   WallStreetBetHomePage({Key key, this.title}) : super(key: key);
@@ -63,6 +63,12 @@ class _WallStreetBetHomePageState extends State<WallStreetBetHomePage> {
     });
   }
 
+  void reload() {
+    setState(() {
+      print('Reloading');
+    });
+  }
+
   void updateInterval(index) {
     final Map<int, String> toggleMap = {0: 'month', 1: 'week', 2: 'day'};
     final defaultInterval = 'month';
@@ -91,6 +97,7 @@ class _WallStreetBetHomePageState extends State<WallStreetBetHomePage> {
   Widget build(BuildContext context) {
     final adaptive = AdaptiveWindow.fromContext(context: context);
     final screenHeigh = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
     final chartHeighFactor = 8 / 10;
     final double minChartHeigh = 500;
     final double maxChartHeigh = screenHeigh * chartHeighFactor < minChartHeigh
