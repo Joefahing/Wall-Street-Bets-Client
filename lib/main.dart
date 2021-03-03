@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:wsb_dashboard/pages/home/Home.dart';
 import './components/theme_data.dart';
+import 'pages/main_screen.dart';
 
 void main() {
   runApp(WallStreetBets());
@@ -14,9 +14,9 @@ class WallStreetBets extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Wall Street Bets Fools Index',
-      theme: mainTheme, 
+      theme: mainTheme,
       debugShowCheckedModeBanner: false,
-      home: WallStreetBetHomePage(title: 'Wall Street Bets Fools Index'),
+      home: MainScreen(),
     );
   }
 }

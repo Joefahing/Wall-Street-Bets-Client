@@ -1,36 +1,36 @@
 import 'package:flutter/material.dart';
 
+import '../widgets/side_menu.dart';
+import '../widgets/responsive_container.dart';
+import 'home/Home.dart';
+
 class MainScreen extends StatelessWidget {
   @override
   build(BuildContext context) {
     return Scaffold(
-      body: LayoutBuilder(
-        builder: (context, constraint) {},
+      body: ResponsiveContainer(
+        mobile: Container(
+          child: Text('Mobile View'),
+        ),
+        tablet: Row(
+          children: [
+            Expanded(child: SideMenu()),
+            Expanded(
+                child: WallStreetBetIndexPage(
+              title: 'Wall Street Bets Fools Index',
+            )),
+          ],
+        ),
+        desktop: Row(
+          children: [
+            Expanded(child: SideMenu()),
+            Expanded(
+                child: WallStreetBetIndexPage(
+              title: 'Wall Street Bets Fools Index',
+            )),
+          ],
+        ),
       ),
-    );
-  }
-}
-
-class ResponsiveContainer extends StatelessWidget {
-  final Widget mobile;
-  final Widget tablet;
-  final Widget desktop;
-
-  ResponsiveContainer({@required this.mobile, @required this.tablet, @required this.desktop});
-
-  @override
-  build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraint) {
-        if (constraint.maxWidth < 350) {
-          return mobile;
-        }
-        if (constraint.maxWidth < 750) {
-          return tablet;
-        } else {
-          return desktop;
-        }
-      },
     );
   }
 }
