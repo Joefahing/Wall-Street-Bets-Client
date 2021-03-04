@@ -23,8 +23,11 @@ class MainScreen extends StatelessWidget {
         ),
         desktop: Row(
           children: [
-            Expanded(child: SideMenu()),
+            Expanded( 
+              flex: 2,
+              child: SideMenu()),
             Expanded(
+              flex: 10,
                 child: WallStreetBetIndexPage(
               title: 'Wall Street Bets Fools Index',
             )),
