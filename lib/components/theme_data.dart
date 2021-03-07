@@ -2,15 +2,20 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
-final lightGray = Color(0xFFF1F1F1);
 final lightOrange = Color(0x44FFC746);
 final lightPink = Color(0x44FF8585);
 final lightGreen = Color(0x4461B15A);
 final lightSilver = Color(0x99BBBFCA);
+final lightGray = Color(0xCCF2F2F2);
 final darkSilver = Color(0x99000000);
+final mediumGrey = Color(0xFF575757);
 final darkOrange = Color(0xFFFF884B);
+final darkGreen = Color(0xFF87AAAA);
+final darkGrey = Colors.grey[800];
 final limeGreen = Color(0xFF16C79A);
 final fireRed = Color(0xFFFF4646);
+final sunsetYellow = Color(0xFFFFC75F);
+final leafGreen = Color(0xFF16C79A);
 
 final wordSpacing = 2.0;
 final baseFontSize = 5.0;
