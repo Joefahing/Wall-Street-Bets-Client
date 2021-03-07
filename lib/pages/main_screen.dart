@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../widgets/side_menu.dart';
+import '../widgets/menu/side_menu.dart';
 import '../widgets/responsive_container.dart';
 import 'home/Home.dart';
 
@@ -12,10 +12,13 @@ class MainScreen extends StatelessWidget {
         mobile: Container(
           child: Text('Mobile View'),
         ),
-        tablet: Row(
+        tablet:  Row(
           children: [
-            Expanded(child: SideMenu()),
+            Expanded( 
+              flex: 3,
+              child: SideMenu()),
             Expanded(
+              flex: 10,
                 child: WallStreetBetIndexPage(
               title: 'Wall Street Bets Fools Index',
             )),
@@ -23,8 +26,11 @@ class MainScreen extends StatelessWidget {
         ),
         desktop: Row(
           children: [
-            Expanded(child: SideMenu()),
+            Expanded( 
+              flex: 3,
+              child: SideMenu()),
             Expanded(
+              flex: 10,
                 child: WallStreetBetIndexPage(
               title: 'Wall Street Bets Fools Index',
             )),
