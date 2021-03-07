@@ -10,8 +10,12 @@
 ///
 
 import 'package:flutter/material.dart';
-import 'main_menu_button.dart';
+import 'side_menu_button.dart';
 import '../../components/theme_data.dart' as theme;
+
+import 'package:flutter/rendering.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SideMenu extends StatefulWidget {
   SideMenu({Key key}) : super(key: key);
@@ -28,7 +32,6 @@ class _SideMenuState extends State<SideMenu> {
 
   final logo = 'assets/images/crayon_logo.png';
   final algoIcon = 'assets/images/algorithmn_menu.svg';
-  final donationIcon = 'assets/images/donation_menu.svg';
   final indexMenuIcon = 'assets/images/index_menu.svg';
   final aboutMeIcon = 'assets/images/man_menu.svg';
   final subscriptionIcon = 'assets/images/subscription_menu.svg';
@@ -91,7 +94,7 @@ class _SideMenuState extends State<SideMenu> {
             child: ListView(
               shrinkWrap: true,
               children: [
-                MainMenuButton(
+                SideMenuButton(
                   text: 'Wall Street Bet Index',
                   label: 'index',
                   iconName: indexMenuIcon,
@@ -100,7 +103,7 @@ class _SideMenuState extends State<SideMenu> {
                   verticalPaddings: verticalPadding,
                   onPress: onButtonClicked,
                 ),
-                MainMenuButton(
+                SideMenuButton(
                   text: 'Trending Symbols',
                   label: 'trending',
                   iconName: trendingIcon,
@@ -109,7 +112,7 @@ class _SideMenuState extends State<SideMenu> {
                   verticalPaddings: verticalPadding,
                   onPress: onButtonClicked,
                 ),
-                MainMenuButton(
+                SideMenuButton(
                   text: 'Algorithm Trading',
                   label: 'algo',
                   iconName: algoIcon,
@@ -118,7 +121,7 @@ class _SideMenuState extends State<SideMenu> {
                   verticalPaddings: verticalPadding,
                   onPress: onButtonClicked,
                 ),
-                MainMenuButton(
+                SideMenuButton(
                   text: 'Subscription',
                   label: 'subscription',
                   iconName: subscriptionIcon,
@@ -127,7 +130,7 @@ class _SideMenuState extends State<SideMenu> {
                   verticalPaddings: verticalPadding,
                   onPress: onButtonClicked,
                 ),
-                MainMenuButton(
+                SideMenuButton(
                   text: 'Settings',
                   label: 'settings',
                   iconName: settingIcon,
@@ -139,12 +142,67 @@ class _SideMenuState extends State<SideMenu> {
               ],
             ),
           ),
-          // Container(
-          //   child: MainMenuButton(
-          //     text: 'Donation',
-          //     iconName: donationIcon,
-          //   ),
-          // )
+          SideMenuButton(
+            text: 'Who Am I?',
+            label: 'who',
+            iconName: aboutMeIcon,
+            color: clickedButton == 'who' ? theme.darkGreen : theme.mediumGrey,
+            isSelected: clickedButton == 'who',
+            verticalPaddings: verticalPadding,
+            onPress: onButtonClicked,
+          ),
+
+          SideMenuFooter()
+        ],
+      ),
+    );
+  }
+}
+
+class SideMenuFooter extends StatelessWidget {
+  final donationIcon = 'assets/images/donation_menu.svg';
+  final url = 'https://www.buymeacoffee.com/';
+  final verticalPadding = 25.0;
+  final footerHeigh = 50.0;
+  final iconSize = 25.0;
+  final itemColor = theme.mediumPink;
+  final backgroundColor = Colors.white;
+
+  @override
+  build(BuildContext context) {
+    return Container(
+      color: backgroundColor,
+      height: footerHeigh,
+      width: double.infinity,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            height: 50,
+            child: Material(
+              color: backgroundColor,
+              child: InkWell(
+                child: Padding(
+                  padding: EdgeInsets.only(left: verticalPadding),
+                  child: Row(
+                    children: [
+                      SvgPicture.asset(
+                        donationIcon,
+                        height: iconSize,
+                        width: iconSize,
+                        color: itemColor,
+                      ),
+                      SizedBox(
+                        width: 15,
+                      ),
+                      Text('Support This Project', style: TextStyle(color: itemColor)),
+                    ],
+                  ),
+                ),
+                onTap: () => {launch(url)},
+              ),
+            ),
+          ),
         ],
       ),
     );

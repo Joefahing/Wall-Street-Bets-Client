@@ -3,7 +3,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../../components/theme_data.dart' as theme;
 
-class MainMenuButton extends StatelessWidget {
+class SideMenuButton extends StatelessWidget {
   final String text;
   final String iconName;
   final String label;
@@ -15,7 +15,7 @@ class MainMenuButton extends StatelessWidget {
   final boxHeigh = 45.0;
   final iconSize = 25.0;
 
-  MainMenuButton(
+  SideMenuButton(
       {@required this.text,
       @required this.iconName,
       @required this.color,
@@ -70,5 +70,3 @@ class MainMenuButton extends StatelessWidget {
     );
   }
 }
-
-//
