@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import '../components/theme_data.dart' as theme;
+import '../../components/theme_data.dart' as theme;
 
 class MainMenuButton extends StatelessWidget {
   final String text;

@@ -10,8 +10,8 @@
 ///
 
 import 'package:flutter/material.dart';
-import '../widgets/main_menu_button.dart';
-import '../components/theme_data.dart' as theme;
+import 'main_menu_button.dart';
+import '../../components/theme_data.dart' as theme;
 
 class SideMenu extends StatefulWidget {
   SideMenu({Key key}) : super(key: key);

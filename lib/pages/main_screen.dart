@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../widgets/side_menu.dart';
+import '../widgets/menu/side_menu.dart';
 import '../widgets/responsive_container.dart';
 import 'home/Home.dart';
 
