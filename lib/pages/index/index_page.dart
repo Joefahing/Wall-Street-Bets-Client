@@ -12,6 +12,7 @@ import '../../widgets/line_chart.dart';
 class WallStreetBetIndexPage extends StatefulWidget {
   WallStreetBetIndexPage({Key key, this.title}) : super(key: key);
 
+  static const String RouteName = '/index';
   final String title;
 
   @override
