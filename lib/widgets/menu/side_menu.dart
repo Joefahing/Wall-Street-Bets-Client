@@ -37,7 +37,7 @@ class _SideMenuState extends State<SideMenu> {
   final settingIcon = 'assets/images/settings_menu.svg';
   final trendingIcon = 'assets/images/trending.svg';
 
-  String clickedButton = 'index';
+  String clickedButton = '/index';
 
   onButtonClicked(String label) {
     setState(() {

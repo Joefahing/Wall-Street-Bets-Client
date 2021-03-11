@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import './components/theme_data.dart';
 import 'pages/main_screen.dart';
 import 'pages/routes.dart';
+import 'pages/unanimated_route.dart';
 
 void main() {
   runApp(WallStreetBets());
@@ -11,8 +12,6 @@ void main() {
 /// Material card Text uses bodyText2 Theme
 
 class WallStreetBets extends StatelessWidget {
-  final customRoute = Routes();
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -20,13 +19,24 @@ class WallStreetBets extends StatelessWidget {
       theme: mainTheme,
       debugShowCheckedModeBanner: false,
       home: MainScreen(pageName: 'index'),
-      routes: {
-        customRoute.index: (context) => customRoute.indexPage,
-        customRoute.trending: (context) => customRoute.trendingPage,
-        customRoute.algo: (context) => customRoute.algoPage,
-        customRoute.subscription: (context) => customRoute.subscriptionPage,
-        customRoute.setting: (context) => customRoute.settingPage,
-        customRoute.about: (context) => customRoute.aboutPage,
+      onGenerateRoute: (RouteSettings settings) {
+        switch (settings.name) {
+          case '/index':
+            return UnanimatedRoute(settings: settings, builder: (_) => Routes.indexPage);
+          case '/trending':
+            return UnanimatedRoute(settings: settings, builder: (_) => Routes.trendingPage);
+          case '/algo':
+            return UnanimatedRoute(settings: settings, builder: (_) => Routes.algoPage);
+          case '/subscription':
+            return UnanimatedRoute(settings: settings, builder: (_) => Routes.subscriptionPage);
+          case '/setting':
+            return UnanimatedRoute(settings: settings, builder: (_) => Routes.settingPage);
+          case '/about':
+            return UnanimatedRoute(settings: settings, builder: (_) => Routes.aboutPage);
+
+          default:
+            return UnanimatedRoute(settings: settings, builder: (_) => Routes.indexPage);
+        }
       },
     );
   }

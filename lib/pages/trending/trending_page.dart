@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 class TrendingPage extends StatelessWidget {
-  static const String RouteName = '/trending';
 
   @override
   build(BuildContext context) {
