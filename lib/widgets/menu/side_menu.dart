@@ -37,11 +37,12 @@ class _SideMenuState extends State<SideMenu> {
   final settingIcon = 'assets/images/settings_menu.svg';
   final trendingIcon = 'assets/images/trending.svg';
 
-  String clickedButton = 'index';
+  String clickedButton = '/index';
 
   onButtonClicked(String label) {
     setState(() {
       clickedButton = label;
+      Navigator.pushReplacementNamed(context, label);
     });
   }
 
@@ -95,46 +96,46 @@ class _SideMenuState extends State<SideMenu> {
               children: [
                 SideMenuButton(
                   text: 'Wall Street Bet Index',
-                  label: 'index',
+                  label: '/index',
                   iconName: indexMenuIcon,
-                  color: clickedButton == 'index' ? theme.darkGreen : theme.mediumGrey,
-                  isSelected: clickedButton == 'index',
+                  color: clickedButton == '/index' ? theme.darkGreen : theme.mediumGrey,
+                  isSelected: clickedButton == '/index',
                   verticalPaddings: verticalPadding,
                   onPress: onButtonClicked,
                 ),
                 SideMenuButton(
                   text: 'Trending Symbols',
-                  label: 'trending',
+                  label: '/trending',
                   iconName: trendingIcon,
-                  color: clickedButton == 'trending' ? theme.darkGreen : theme.mediumGrey,
-                  isSelected: clickedButton == 'trending',
+                  color: clickedButton == '/trending' ? theme.darkGreen : theme.mediumGrey,
+                  isSelected: clickedButton == '/trending',
                   verticalPaddings: verticalPadding,
                   onPress: onButtonClicked,
                 ),
                 SideMenuButton(
                   text: 'Algorithm Trading',
-                  label: 'algo',
+                  label: '/algo',
                   iconName: algoIcon,
-                  color: clickedButton == 'algo' ? theme.darkGreen : theme.mediumGrey,
-                  isSelected: clickedButton == 'algo',
+                  color: clickedButton == '/algo' ? theme.darkGreen : theme.mediumGrey,
+                  isSelected: clickedButton == '/algo',
                   verticalPaddings: verticalPadding,
                   onPress: onButtonClicked,
                 ),
                 SideMenuButton(
                   text: 'Subscription',
-                  label: 'subscription',
+                  label: '/subscription',
                   iconName: subscriptionIcon,
-                  color: clickedButton == 'subscription' ? theme.darkGreen : theme.mediumGrey,
-                  isSelected: clickedButton == 'subscription',
+                  color: clickedButton == '/subscription' ? theme.darkGreen : theme.mediumGrey,
+                  isSelected: clickedButton == '/subscription',
                   verticalPaddings: verticalPadding,
                   onPress: onButtonClicked,
                 ),
                 SideMenuButton(
                   text: 'Settings',
-                  label: 'settings',
+                  label: '/setting',
                   iconName: settingIcon,
-                  color: clickedButton == 'settings' ? theme.darkGreen : theme.mediumGrey,
-                  isSelected: clickedButton == 'settings',
+                  color: clickedButton == '/setting' ? theme.darkGreen : theme.mediumGrey,
+                  isSelected: clickedButton == '/setting',
                   verticalPaddings: verticalPadding,
                   onPress: onButtonClicked,
                 ),
@@ -143,10 +144,10 @@ class _SideMenuState extends State<SideMenu> {
           ),
           SideMenuButton(
             text: 'Who Am I?',
-            label: 'who',
+            label: '/about',
             iconName: aboutMeIcon,
-            color: clickedButton == 'who' ? theme.darkGreen : theme.mediumGrey,
-            isSelected: clickedButton == 'who',
+            color: clickedButton == '/about' ? theme.darkGreen : theme.mediumGrey,
+            isSelected: clickedButton == '/about',
             verticalPaddings: verticalPadding,
             onPress: onButtonClicked,
           ),
