@@ -24,7 +24,9 @@ class APIController {
   }
 
   Future<Map<String, dynamic>> fetchFromEndPoint({String route, String time}) async {
-    final apiResponse = await HTTP.get("$route$time");
+    //final apiResponse = await HTTP.get("$route$time");
+    final url = Uri.parse("$route$time");
+    final apiResponse = await HTTP.get(url);
 
     if (apiResponse.statusCode != 200) throw Exception('Failed to fetch posts from API end point');
 
