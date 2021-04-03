@@ -1,19 +1,13 @@
-///The side menu will contain
-///1. background color: ?
-///2. Everything is centered
-///3. Name Crayonse
-///4. Menu Items
-/// 1. Wall Strret Bet Index
-/// 2. Trending Symbols
-/// 3. Algo trading
-///
-///
-
 import 'package:flutter/material.dart';
+
+import 'package:flutter_redux/flutter_redux.dart';
 
 import 'side_menu_button.dart';
 import 'side_menu_footer.dart';
 
+import '../../redux/states/appState.dart';
+import '../../redux/viewmodels/navigationViewModel.dart';
+import '../../redux/actions/navigationAction.dart';
 import '../../components/theme_data.dart' as theme;
 
 class SideMenu extends StatefulWidget {
@@ -47,114 +41,155 @@ class _SideMenuState extends State<SideMenu> {
   }
 
   build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.only(
-        top: horizontalPadding,
-      ),
-      height: double.infinity,
-      decoration: BoxDecoration(color: backgroundColor),
-      child: Column(
-        children: [
-          //This row will be come the header of the side menu
-          Padding(
-            padding: EdgeInsets.only(left: verticalPadding),
-            child: Row(
+    return StoreConnector<AppState, NavigationViewModel>(
+
+        //Converter here will extract all the data returned from NavigationView.fromStore to pass to builder function
+        //Therefore the build function will now have access to view model and we would not have to worry about logics
+
+        converter: (store) => NavigationViewModel.fromStore(store),
+        builder: (BuildContext context, viewModel) {
+          return Container(
+            padding: EdgeInsets.only(
+              top: horizontalPadding,
+            ),
+            height: double.infinity,
+            decoration: BoxDecoration(color: backgroundColor),
+            child: Column(
               children: [
-                Container(
-                  width: iconSize + 10,
-                  height: iconSize + 10,
-                  decoration: BoxDecoration(
-                    color: theme.darkGrey,
-                    borderRadius: BorderRadius.circular(theme.borderRadius),
-                  ),
-                  child: Center(
-                    child: SizedBox(
-                      height: iconSize,
-                      width: iconSize,
-                      child: Image.asset(logo),
-                    ),
-                  ),
-                ),
-                SizedBox(width: 10),
-                RichText(
-                  text: TextSpan(
-                    style: theme.headline2,
+                //This row will be come the header of the side menu
+                Padding(
+                  padding: EdgeInsets.only(left: verticalPadding),
+                  child: Row(
                     children: [
-                      TextSpan(text: 'CRA', style: TextStyle(color: theme.fireRed)),
-                      TextSpan(text: 'Y', style: TextStyle(color: theme.sunsetYellow)),
-                      TextSpan(text: 'ONS', style: TextStyle(color: theme.leafGreen)),
+                      Container(
+                        width: iconSize + 10,
+                        height: iconSize + 10,
+                        decoration: BoxDecoration(
+                          color: theme.darkGrey,
+                          borderRadius: BorderRadius.circular(theme.borderRadius),
+                        ),
+                        child: Center(
+                          child: SizedBox(
+                            height: iconSize,
+                            width: iconSize,
+                            child: Image.asset(logo),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 10),
+                      RichText(
+                        text: TextSpan(
+                          style: theme.headline2,
+                          children: [
+                            TextSpan(text: 'CRA', style: TextStyle(color: theme.fireRed)),
+                            TextSpan(text: 'Y', style: TextStyle(color: theme.sunsetYellow)),
+                            TextSpan(text: 'ONS', style: TextStyle(color: theme.leafGreen)),
+                          ],
+                        ),
+                      )
                     ],
                   ),
-                )
-              ],
-            ),
-          ),
-          SizedBox(height: 40),
-          Expanded(
-            child: ListView(
-              shrinkWrap: true,
-              children: [
-                SideMenuButton(
-                  text: 'Wall Street Bet Index',
-                  label: '/index',
-                  iconName: indexMenuIcon,
-                  color: clickedButton == '/index' ? theme.darkGreen : theme.mediumGrey,
-                  isSelected: clickedButton == '/index',
-                  verticalPaddings: verticalPadding,
-                  onPress: onButtonClicked,
                 ),
-                SideMenuButton(
-                  text: 'Trending Symbols',
-                  label: '/trending',
-                  iconName: trendingIcon,
-                  color: clickedButton == '/trending' ? theme.darkGreen : theme.mediumGrey,
-                  isSelected: clickedButton == '/trending',
-                  verticalPaddings: verticalPadding,
-                  onPress: onButtonClicked,
-                ),
-                SideMenuButton(
-                  text: 'Algorithm Trading',
-                  label: '/algo',
-                  iconName: algoIcon,
-                  color: clickedButton == '/algo' ? theme.darkGreen : theme.mediumGrey,
-                  isSelected: clickedButton == '/algo',
-                  verticalPaddings: verticalPadding,
-                  onPress: onButtonClicked,
-                ),
-                SideMenuButton(
-                  text: 'Subscription',
-                  label: '/subscription',
-                  iconName: subscriptionIcon,
-                  color: clickedButton == '/subscription' ? theme.darkGreen : theme.mediumGrey,
-                  isSelected: clickedButton == '/subscription',
-                  verticalPaddings: verticalPadding,
-                  onPress: onButtonClicked,
-                ),
-                SideMenuButton(
-                  text: 'Settings',
-                  label: '/setting',
-                  iconName: settingIcon,
-                  color: clickedButton == '/setting' ? theme.darkGreen : theme.mediumGrey,
-                  isSelected: clickedButton == '/setting',
-                  verticalPaddings: verticalPadding,
-                  onPress: onButtonClicked,
-                ),
-              ],
-            ),
-          ),
-          SideMenuButton(
-            text: 'Who Am I?',
-            label: '/about',
-            iconName: aboutMeIcon,
-            color: clickedButton == '/about' ? theme.darkGreen : theme.mediumGrey,
-            isSelected: clickedButton == '/about',
-            verticalPaddings: verticalPadding,
-            onPress: onButtonClicked,
-          ),
+                SizedBox(height: 40),
+                Expanded(
+                  child: ListView(
+                    shrinkWrap: true,
+                    children: [
+                      StoreConnector<AppState, VoidCallback>(
+                          converter: (store) =>
+                              () => store.dispatch(NavigationTabPressedAction(tab: 'index')),
+                          builder: (context, callback) {
+                            return SideMenuButton(
+                              text: 'Wall Street Bet Index',
+                              label: '/index',
+                              iconName: indexMenuIcon,
+                              color: viewModel.tab == 'index' ? theme.darkGreen : theme.mediumGrey,
+                              isSelected: viewModel.tab == 'index',
+                              verticalPaddings: verticalPadding,
+                              onPress: callback,
+                            );
+                          }),
 
-          SideMenuFooter()
-        ],
-      ),
-    );
+                      StoreConnector<AppState, VoidCallback>(converter: (store) {
+                        //Navigator.pushReplacementNamed(context, 'trending');
+                        return () => store.dispatch(NavigationTabPressedAction(tab: 'trending'));
+                      }, builder: (context, callback) {
+                        return SideMenuButton(
+                          text: 'Trending Symbols',
+                          label: '/trending',
+                          iconName: indexMenuIcon,
+                          color: viewModel.tab == 'trending' ? theme.darkGreen : theme.mediumGrey,
+                          isSelected: viewModel.tab == 'trending',
+                          verticalPaddings: verticalPadding,
+                          onPress: callback,
+                        );
+                      }),
+
+                      // SideMenuButton(
+                      //   text: 'Wall Street Bet Index',
+                      //   label: '/index',
+                      //   iconName: indexMenuIcon,
+                      //   color: viewModel.tab == 'index' ? theme.darkGreen : theme.mediumGrey,
+                      //   isSelected: viewModel.tab == 'index',
+                      //   verticalPaddings: verticalPadding,
+                      //   onPress: (){
+
+                      //   },
+                      // ),
+                      // SideMenuButton(
+                      //   text: 'Trending Symbols',
+                      //   label: '/trending',
+                      //   iconName: trendingIcon,
+                      //   color: clickedButton == '/trending' ? theme.darkGreen : theme.mediumGrey,
+                      //   isSelected: clickedButton == '/trending',
+                      //   verticalPaddings: verticalPadding,
+                      //   //onPress: onButtonClicked,
+                      // ),
+                      SideMenuButton(
+                        text: 'Algorithm Trading',
+                        label: '/algo',
+                        iconName: algoIcon,
+                        color: clickedButton == '/algo' ? theme.darkGreen : theme.mediumGrey,
+                        isSelected: clickedButton == '/algo',
+                        verticalPaddings: verticalPadding,
+                        //onPress: onButtonClicked,
+                      ),
+                      SideMenuButton(
+                        text: 'Subscription',
+                        label: '/subscription',
+                        iconName: subscriptionIcon,
+                        color:
+                            clickedButton == '/subscription' ? theme.darkGreen : theme.mediumGrey,
+                        isSelected: clickedButton == '/subscription',
+                        verticalPaddings: verticalPadding,
+                        //onPress: onButtonClicked,
+                      ),
+                      SideMenuButton(
+                        text: 'Settings',
+                        label: '/setting',
+                        iconName: settingIcon,
+                        color: clickedButton == '/setting' ? theme.darkGreen : theme.mediumGrey,
+                        isSelected: clickedButton == '/setting',
+                        verticalPaddings: verticalPadding,
+                        //onPress: onButtonClicked,
+                      ),
+                    ],
+                  ),
+                ),
+                SideMenuButton(
+                  text: 'Who Am I?',
+                  label: '/about',
+                  iconName: aboutMeIcon,
+                  color: clickedButton == '/about' ? theme.darkGreen : theme.mediumGrey,
+                  isSelected: clickedButton == '/about',
+                  verticalPaddings: verticalPadding,
+                  //onPress: onButtonClicked,
+                ),
+
+                SideMenuFooter()
+              ],
+            ),
+          );
+        });
   }
 }

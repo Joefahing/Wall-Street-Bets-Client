@@ -10,7 +10,7 @@ class SideMenuButton extends StatelessWidget {
   final double verticalPaddings;
   final Color color;
   final bool isSelected;
-  final void Function(String) onPress;
+  final void Function() onPress;
 
   final boxHeigh = 45.0;
   final iconSize = 25.0;
@@ -64,7 +64,7 @@ class SideMenuButton extends StatelessWidget {
               ],
             ),
           ),
-          onTap: () => {onPress(this.label)},
+          onTap: () => {onPress()},
         ),
       ),
     );

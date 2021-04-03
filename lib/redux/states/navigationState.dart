@@ -1,4 +1,6 @@
 class NavigationState {
+
+  //As for now there is only one properties in the store which is being used to track with tab is being pressed
   final String tab;
 
   NavigationState({this.tab});
