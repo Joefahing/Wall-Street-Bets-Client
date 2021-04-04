@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class Index {
   int points;
   DateTime dateCreated;
@@ -8,7 +10,10 @@ class Index {
   }
 
   factory Index.fromJson({Map<String, dynamic> json}) {
-    return Index(date: json['date_created'] as String, points: json['points'] as int);
+    return Index(
+      date: json['date_created'] as String,
+      points: json['points'] as int,
+    );
   }
 
   @override
@@ -20,21 +25,23 @@ class Index {
   @override
   int get hashCode => points.hashCode ^ dateCreated.hashCode;
 
-  static Future<List<Index>> convertJsonToList({Future<Map<String, dynamic>> response}) async {
-    final List<Index> indexes = [];
-    final rawData = await response.then((json) => json['data_used']);
-
-    for (final index in rawData) {
-      final newIndex = Index.fromJson(json: index);
-      indexes.add(newIndex);
-    }
-
-    return indexes;
-  }
-
   @override
   String toString() {
     print("${this.dateCreated} and ${this.points}");
     return super.toString();
   }
+}
+
+/// Since the structure of index json return from api is. Pre processing is need to retrieve data array
+/// {
+/// "data_used": [],
+/// "dates":{
+///   start_date: d,
+///   end_date: e
+/// }
+/// }
+List<Index> indexesFromJson({String rawJson}) {
+  final Map<String, dynamic> decoded = jsonDecode(rawJson);
+  final data = decoded['data_used'];
+  return List<Index>.from(data.map((rawIndex) => Index.fromJson(json: rawIndex)));
 }

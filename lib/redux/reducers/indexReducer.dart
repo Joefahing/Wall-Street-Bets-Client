@@ -12,13 +12,11 @@ IndexState _getIndexSuccess(IndexState state, GetWSBIndeSuccessAction action) {
 }
 
 IndexState _getIndexFailed(IndexState state, GetWSBIndexFailedAction action) {
-  return state
-      .copyWith(fetchingComplete: false, isFeching: false, fetchingError: true, indexes: []);
+  return state.copyWith(fetchingComplete: false, isFeching: false, fetchingError: true);
 }
 
 IndexState _getIndexLoading(IndexState state, GetWSBIndexLoadingAction action) {
-  return state
-      .copyWith(isFeching: true, fetchingComplete: false, fetchingError: false, indexes: []);
+  return state.copyWith(isFeching: true, fetchingComplete: false, fetchingError: false);
 }
 
 final indexReducer = combineReducers<IndexState>([
