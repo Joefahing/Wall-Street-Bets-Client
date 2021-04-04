@@ -6,7 +6,7 @@ class NavigationState {
   NavigationState({this.tab});
 
   factory NavigationState.init() {
-    return NavigationState(tab: 'index');
+    return NavigationState(tab: '/index');
   }
 
   @override

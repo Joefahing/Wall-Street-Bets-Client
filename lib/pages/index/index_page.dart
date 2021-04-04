@@ -1,9 +1,14 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 import 'package:charts_flutter/flutter.dart' as Charts;
 
-import '../../controllers/APIController.dart';
+import '../../redux/states/appState.dart';
+import '../../redux/viewmodels/indexPageViewModel.dart';
+import '../../redux/thunks/indexThunk.dart';
+import '../../redux/actions/viewAction.dart';
+import '../../controllers/APIController.dart'; // will be  retired soon
 import '../../components/adaptive.dart';
 import '../../components/theme_data.dart' as theme;
 
@@ -29,63 +34,63 @@ class _WallStreetBetIndexPageState extends State<WallStreetBetIndexPage> {
     indexDataSeries = apiController.getIndexGraphData(response: indexAPIResponse);
   }
 
-  String _prepareChartTitle(String interval) {
-    switch (interval) {
-      case 'week':
-        return 'Weekly';
-      case 'day':
-        return 'Daily';
-      case 'month':
-        return 'Monthly';
-      default:
-        throw Exception('Invalid Interval');
-    }
-  }
+  // String _prepareChartTitle(String interval) {
+  //   switch (interval) {
+  //     case 'week':
+  //       return 'Weekly';
+  //     case 'day':
+  //       return 'Daily';
+  //     case 'month':
+  //       return 'Monthly';
+  //     default:
+  //       throw Exception('Invalid Interval');
+  //   }
+  // }
 
-  void updateWeeklyInterval() {
-    setState(() {
-      interval = 'week';
-      _prepareIndexData();
-    });
-  }
+  // void updateWeeklyInterval() {
+  //   setState(() {
+  //     interval = 'week';
+  //     _prepareIndexData();
+  //   });
+  // }
 
-  void updateMonthlyInterval() {
-    setState(() {
-      interval = 'month';
-      _prepareIndexData();
-    });
-  }
+  // void updateMonthlyInterval() {
+  //   setState(() {
+  //     interval = 'month';
+  //     _prepareIndexData();
+  //   });
+  // }
 
-  void updateDailyInterval() {
-    setState(() {
-      interval = 'day';
-      _prepareIndexData();
-    });
-  }
+  // void updateDailyInterval() {
+  //   setState(() {
+  //     interval = 'day';
+  //     _prepareIndexData();
+  //   });
+  // }
 
-  void reload() {
-    setState(() {
-      print('Reloading');
-    });
-  }
+  // void reload() {
+  //   setState(() {
+  //     print('Reloading');
+  //   });
+  // }
 
-  void updateInterval(index) {
-    final Map<int, String> toggleMap = {0: 'month', 1: 'week', 2: 'day'};
-    final defaultInterval = 'month';
-    final selection = toggleMap.containsKey(index) ? toggleMap[index] : defaultInterval;
+  // void updateInterval(index) {
+  //   final Map<int, String> toggleMap = {0: 'month', 1: 'week', 2: 'day'};
+  //   final defaultInterval = 'month';
+  //   final selection = toggleMap.containsKey(index) ? toggleMap[index] : defaultInterval;
 
-    switch (selection) {
-      case 'month':
-        updateMonthlyInterval();
-        break;
-      case 'week':
-        updateWeeklyInterval();
-        break;
-      case 'day':
-        updateDailyInterval();
-        break;
-    }
-  }
+  //   switch (selection) {
+  //     case 'month':
+  //       updateMonthlyInterval();
+  //       break;
+  //     case 'week':
+  //       updateWeeklyInterval();
+  //       break;
+  //     case 'day':
+  //       updateDailyInterval();
+  //       break;
+  //   }
+  // }
 
   @override
   void initState() {
@@ -105,133 +110,167 @@ class _WallStreetBetIndexPageState extends State<WallStreetBetIndexPage> {
         : screenHeigh * chartHeighFactor;
     final measurements = adaptive.getBreakpoint();
 
-    return Scaffold(
-      body: Container(
-        margin: EdgeInsets.only(
-          right: measurements.leftRightMargin,
-          left: measurements.leftRightMargin,
-        ),
-        child: Scrollbar(
-          child: SingleChildScrollView(
-            child: Container(
+    return StoreConnector<AppState, IndexPageViewModel>(
+        // onInit: (store) {
+        //   store.dispatch(ViewIntervalPickerPressAction(interval: 'day'));
+        // },
+        converter: (store) => IndexPageViewModel.fromStore(store),
+        builder: (context, viewModel) {
+          return Scaffold(
+            body: Container(
               margin: EdgeInsets.only(
-                top: measurements.topDownMargin,
-                bottom: measurements.topDownMargin,
+                right: measurements.leftRightMargin,
+                left: measurements.leftRightMargin,
               ),
-              child: Column(
-                children: [
-                  FlatBackgroundBox(
-                    child: LayoutBuilder(
-                      builder: (context, constraint) {
-                        final double minWidth = 750;
-                        int crossAxisCount = adaptive.width < minWidth ? 1 : 2;
-                        double itemWidth = constraint.maxWidth / crossAxisCount;
-                        int widgetHeigh = crossAxisCount == 1 ? 65 : 80;
-                        return GridView.count(
-                          childAspectRatio: itemWidth / widgetHeigh,
-                          crossAxisCount: crossAxisCount,
-                          primary: false,
-                          shrinkWrap: true,
-                          children: [
-                            Column(
-                              children: [
-                                Text('Wall Street Bets for Fools', style: theme.headline1),
-                                Text('Lose Money With Friends', style: theme.headline3),
-                              ],
-                            ),
-                            Align(
-                              alignment: Alignment.center,
-                              child: Row(
-                                mainAxisAlignment: crossAxisCount == 1
-                                    ? MainAxisAlignment.center
-                                    : MainAxisAlignment.spaceBetween,
+              child: Scrollbar(
+                child: SingleChildScrollView(
+                  child: Container(
+                    margin: EdgeInsets.only(
+                      top: measurements.topDownMargin,
+                      bottom: measurements.topDownMargin,
+                    ),
+                    child: Column(
+                      children: [
+                        FlatBackgroundBox(
+                          child: LayoutBuilder(
+                            builder: (context, constraint) {
+                              final double minWidth = 750;
+                              int crossAxisCount = adaptive.width < minWidth ? 1 : 2;
+                              double itemWidth = constraint.maxWidth / crossAxisCount;
+                              int widgetHeigh = crossAxisCount == 1 ? 65 : 80;
+                              return GridView.count(
+                                childAspectRatio: itemWidth / widgetHeigh,
+                                crossAxisCount: crossAxisCount,
+                                primary: false,
+                                shrinkWrap: true,
                                 children: [
-                                  SizedBox(width: 1),
-                                  Container(
-                                    padding: EdgeInsets.all(10),
-                                    decoration: BoxDecoration(
-                                      color: theme.lightGray,
-                                      borderRadius: BorderRadius.circular(theme.borderRadius),
-                                    ),
+                                  Column(
+                                    children: [
+                                      Text('Wall Street Bets for Fools', style: theme.headline1),
+                                      Text('Lose Money With Friends', style: theme.headline3),
+                                    ],
+                                  ),
+                                  Align(
+                                    alignment: Alignment.center,
                                     child: Row(
+                                      mainAxisAlignment: crossAxisCount == 1
+                                          ? MainAxisAlignment.center
+                                          : MainAxisAlignment.spaceBetween,
                                       children: [
-                                        IntervalFlatButton(
-                                            title: 'Monthly',
-                                            color: interval == 'month'
-                                                ? Colors.white
-                                                : theme.lightGray,
-                                            onPressed: updateMonthlyInterval),
-                                        SizedBox(width: measurements.gutter / 2),
-                                        IntervalFlatButton(
-                                            title: 'Weekly',
-                                            color:
-                                                interval == 'week' ? Colors.white : theme.lightGray,
-                                            onPressed: updateWeeklyInterval),
-                                        SizedBox(width: measurements.gutter / 2),
-                                        IntervalFlatButton(
-                                            title: 'Daily',
-                                            color:
-                                                interval == 'day' ? Colors.white : theme.lightGray,
-                                            onPressed: updateDailyInterval),
+                                        SizedBox(width: 1),
+                                        Container(
+                                          padding: EdgeInsets.all(10),
+                                          decoration: BoxDecoration(
+                                            color: theme.lightGray,
+                                            borderRadius: BorderRadius.circular(theme.borderRadius),
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              StoreConnector<AppState, VoidCallback>(
+                                                converter: (store) {
+                                                  return () => store.dispatch(
+                                                      getIndexByIntervalThunk(store, 'month'));
+                                                },
+                                                builder: (context, callback) {
+                                                  return IntervalFlatButton(
+                                                      title: 'Monthly',
+                                                      color: viewModel.interval == 'month'
+                                                          ? Colors.white
+                                                          : theme.lightGray,
+                                                      onPressed: callback);
+                                                },
+                                              ),
+                                              SizedBox(width: measurements.gutter / 2),
+                                              StoreConnector<AppState, VoidCallback>(
+                                                converter: (store) {
+                                                  return () => store.dispatch(
+                                                      getIndexByIntervalThunk(store, 'week'));
+                                                },
+                                                builder: (context, callback) {
+                                                  return IntervalFlatButton(
+                                                      title: 'Weekly',
+                                                      color: viewModel.interval == 'week'
+                                                          ? Colors.white
+                                                          : theme.lightGray,
+                                                      onPressed: callback);
+                                                },
+                                              ),
+                                              StoreConnector<AppState, VoidCallback>(
+                                                converter: (store) {
+                                                  return () => store.dispatch(
+                                                      getIndexByIntervalThunk(store, 'day'));
+                                                },
+                                                builder: (context, callback) {
+                                                  return IntervalFlatButton(
+                                                      title: 'Daily',
+                                                      color: viewModel.interval == 'day'
+                                                          ? Colors.white
+                                                          : theme.lightGray,
+                                                      onPressed: callback);
+                                                },
+                                              ),
+                                            ],
+                                          ),
+                                        ),
                                       ],
                                     ),
-                                  ),
+                                  )
                                 ],
-                              ),
-                            )
-                          ],
-                        );
-                      },
-                    ),
-                  ),
-                  SizedBox(height: measurements.gutter / 2, width: measurements.gutter),
-                  Container(
-                    constraints: BoxConstraints(minHeight: minChartHeigh, maxHeight: maxChartHeigh),
-                    child: FlatBackgroundBox(
-                      child: Flex(
-                        direction: Axis.vertical,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                '${_prepareChartTitle(interval)} Index',
-                                style: theme.headline1,
-                              ),
-                            ],
+                              );
+                            },
                           ),
-                          Expanded(
-                            child: FutureBuilder(
-                              future: indexDataSeries,
-                              builder: (BuildContext context, future) {
-                                final marginMultiplier = 3;
-                                if (future.hasData) {
-                                  return WallStreetBetTimeSeriesChart(series: future.data);
-                                } else if (future.hasError) {
-                                  return Text("${future.error}");
-                                }
-                                return Center(
-                                  child: Padding(
-                                      padding: EdgeInsets.only(
-                                        right: measurements.leftRightMargin * marginMultiplier,
-                                        left: measurements.leftRightMargin * marginMultiplier,
-                                      ),
-                                      child: LinearProgressIndicator()),
-                                );
-                              },
+                        ),
+                        SizedBox(height: measurements.gutter / 2, width: measurements.gutter),
+                        Container(
+                          constraints:
+                              BoxConstraints(minHeight: minChartHeigh, maxHeight: maxChartHeigh),
+                          child: FlatBackgroundBox(
+                            child: Flex(
+                              direction: Axis.vertical,
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      '${viewModel.intervalTitle} Index',
+                                      style: theme.headline1,
+                                    ),
+                                  ],
+                                ),
+                                Expanded(
+                                  child: FutureBuilder(
+                                    future: indexDataSeries,
+                                    builder: (BuildContext context, future) {
+                                      final marginMultiplier = 3;
+                                      if (future.hasData) {
+                                        return WallStreetBetTimeSeriesChart(series: future.data);
+                                      } else if (future.hasError) {
+                                        return Text("${future.error}");
+                                      }
+                                      return Center(
+                                        child: Padding(
+                                            padding: EdgeInsets.only(
+                                              right:
+                                                  measurements.leftRightMargin * marginMultiplier,
+                                              left: measurements.leftRightMargin * marginMultiplier,
+                                            ),
+                                            child: LinearProgressIndicator()),
+                                      );
+                                    },
+                                  ),
+                                )
+                              ],
                             ),
-                          )
-                        ],
-                      ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
+                ),
               ),
             ),
-          ),
-        ),
-      ),
-    );
+          );
+        });
   }
 }
 
