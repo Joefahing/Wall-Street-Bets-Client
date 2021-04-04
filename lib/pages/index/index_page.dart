@@ -7,7 +7,6 @@ import 'package:charts_flutter/flutter.dart' as Charts;
 import '../../redux/states/appState.dart';
 import '../../redux/viewmodels/indexPageViewModel.dart';
 import '../../redux/thunks/indexThunk.dart';
-import '../../redux/actions/viewAction.dart';
 import '../../controllers/APIController.dart'; // will be  retired soon
 import '../../components/adaptive.dart';
 import '../../components/theme_data.dart' as theme;

@@ -6,3 +6,4 @@ import '../states/appState.dart';
 ThunkAction<AppState> getIndexByIntervalThunk(Store<AppState> store, String interval) {
   return store.dispatch(ViewIntervalPickerPressAction(interval: interval));
 }
+  

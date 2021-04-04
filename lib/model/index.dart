@@ -11,6 +11,15 @@ class Index {
     return Index(date: json['date_created'] as String, points: json['points'] as int);
   }
 
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other is Index && other.points == this.points && other.dateCreated == this.dateCreated);
+  }
+
+  @override
+  int get hashCode => points.hashCode ^ dateCreated.hashCode;
+
   static Future<List<Index>> convertJsonToList({Future<Map<String, dynamic>> response}) async {
     final List<Index> indexes = [];
     final rawData = await response.then((json) => json['data_used']);
