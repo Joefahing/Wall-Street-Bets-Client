@@ -46,20 +46,6 @@ class APIController {
     return chartDataSet;
   }
 
-  Future<List<Index>> getIndex({Future<Map<String, dynamic>> response}) async {
-    final List<Index> indexes = await Index.convertJsonToList(response: response);
-    return indexes;
-  }
-
-  Future<List<Charts.Series<dynamic, DateTime>>> getIndexGraphData(
-      {Future<Map<String, dynamic>> response}) async {
-    final color = ChartColor.red;
-    final indexes = await Index.convertJsonToList(response: response);
-    final timeSeriesIndexes = _convertIndexToTimeSeries(indexes: indexes);
-    final indexChartData = convertDataToChartSeries(data: timeSeriesIndexes, color: color);
-    return [indexChartData];
-  }
-
   ///fromJson factory method from Post class is used there to deserilize json post
   Future<List<Post>> getPosts({Future<Map<String, dynamic>> response}) async {
     final List<Post> posts = [];

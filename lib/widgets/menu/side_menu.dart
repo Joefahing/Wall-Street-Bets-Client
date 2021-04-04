@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:flutter_redux/flutter_redux.dart';
 
 import 'side_menu_button.dart';
@@ -31,7 +30,9 @@ class SideMenu extends StatelessWidget {
         //Converter here will extract all the data returned from NavigationView.fromStore to pass to builder function
         //Therefore the build function will now have access to view model and we would not have to worry about logics
         onWillChange: (prevViewModel, currentViewModel) {
-          Navigator.pushReplacementNamed(context, currentViewModel.tab);
+          if (prevViewModel.tab != currentViewModel.tab) {
+            Navigator.pushReplacementNamed(context, currentViewModel.tab);
+          }
         },
         converter: (store) => NavigationViewModel.fromStore(store),
         builder: (BuildContext context, viewModel) {

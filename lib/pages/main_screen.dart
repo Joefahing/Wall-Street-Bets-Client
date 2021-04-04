@@ -14,7 +14,7 @@ import 'error/error_page.dart';
 
 class MainScreen extends StatelessWidget {
   final Map<String, Widget> pages = {
-    'index': WallStreetBetIndexPage(title: 'Wall Street Bets Fools Index'),
+    'index': WallStreetBetIndexPage(),
     'trending': TrendingPage(),
     'algo': AlgoPage(),
     'subscription': SubscriptionPage(),
@@ -23,7 +23,6 @@ class MainScreen extends StatelessWidget {
     'error': ErrorPage(),
   };
 
-  // final Map<String, Widget> pages;
   final String pageName;
 
   MainScreen({
