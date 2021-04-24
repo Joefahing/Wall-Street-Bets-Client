@@ -9,7 +9,7 @@ import '../../components/adaptive.dart';
 import '../../components/theme_data.dart' as theme;
 import '../../widgets/line_chart.dart';
 
-class WallStreetBetIndexPage extends StatelessWidget{
+class WallStreetBetIndexPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final adaptive = AdaptiveWindow.fromContext(context: context);
@@ -161,17 +161,30 @@ class WallStreetBetIndexPage extends StatelessWidget{
                                   ],
                                 ),
                                 Expanded(
-                                    child: viewModel.isFetching
-                                        ? Center(
-                                            child: Padding(
-                                                padding: EdgeInsets.only(
-                                                  right: measurements.leftRightMargin * 3,
-                                                  left: measurements.leftRightMargin * 3,
-                                                ),
-                                                child: LinearProgressIndicator()),
-                                          )
-                                        : WallStreetBetTimeSeriesChart(
-                                            series: viewModel.indexChartData))
+                                  child: Column(
+                                    children: [
+                                      viewModel.isFetching
+                                          ? Text("No Data is present")
+                                          : Text(viewModel.indexesInText()),
+                                      Text(
+                                          "isFetching flag: ${viewModel.isFetching}\nisComplete flag: ${viewModel.fetchingComplete}\nfetchingError flag ${viewModel.fetchingError}"),
+                                      Text("Error}"),
+                                      Text("${viewModel.errorMessage}")
+                                    ],
+                                  ),
+                                )
+                                // Expanded(
+                                //     child: viewModel.isFetching
+                                //         ? Center(
+                                //             child: Padding(
+                                //                 padding: EdgeInsets.only(
+                                //                   right: measurements.leftRightMargin * 3,
+                                //                   left: measurements.leftRightMargin * 3,
+                                //                 ),
+                                //                 child: LinearProgressIndicator()),
+                                //           )
+                                //         : WallStreetBetTimeSeriesChart(
+                                //             series: viewModel.indexChartData))
                               ],
                             ),
                           ),

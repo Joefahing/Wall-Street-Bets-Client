@@ -7,11 +7,22 @@ class IndexState {
   final bool fetchingComplete;
   final bool fetchingError;
   final List<Index> indexes;
+  final String errorMessage;
 
-  IndexState({this.isFetching, this.fetchingComplete, this.fetchingError, this.indexes});
+  IndexState(
+      {this.isFetching,
+      this.fetchingComplete,
+      this.fetchingError,
+      this.indexes,
+      this.errorMessage});
 
   factory IndexState.init() {
-    return IndexState(isFetching: false, fetchingComplete: true, fetchingError: false, indexes: []);
+    return IndexState(
+        isFetching: false,
+        fetchingComplete: true,
+        fetchingError: false,
+        indexes: [],
+        errorMessage: '');
   }
 
   @override
@@ -21,7 +32,8 @@ class IndexState {
             other.isFetching == this.isFetching &&
             other.fetchingComplete == this.fetchingComplete &&
             other.fetchingError == this.fetchingError &&
-            other.indexes == this.indexes);
+            other.indexes == this.indexes &&
+            other.errorMessage == this.errorMessage);
   }
 
   @override
@@ -29,11 +41,16 @@ class IndexState {
       isFetching.hashCode ^ fetchingComplete.hashCode ^ fetchingError.hashCode ^ indexes.hashCode;
 
   IndexState copyWith(
-      {bool isFeching, bool fetchingComplete, bool fetchingError, List<Index> indexes}) {
+      {bool isFeching,
+      bool fetchingComplete,
+      bool fetchingError,
+      List<Index> indexes,
+      String errorMessage}) {
     return IndexState(
         isFetching: isFeching ?? this.isFetching,
         fetchingComplete: fetchingComplete ?? this.fetchingComplete,
         fetchingError: fetchingError ?? this.fetchingError,
-        indexes: indexes ?? this.indexes);
+        indexes: indexes ?? this.indexes,
+        errorMessage: errorMessage ?? this.errorMessage);
   }
 }

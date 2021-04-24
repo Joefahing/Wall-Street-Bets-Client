@@ -12,7 +12,11 @@ IndexState _getIndexSuccess(IndexState state, GetWSBIndeSuccessAction action) {
 }
 
 IndexState _getIndexFailed(IndexState state, GetWSBIndexFailedAction action) {
-  return state.copyWith(fetchingComplete: false, isFeching: false, fetchingError: true);
+  return state.copyWith(
+      fetchingComplete: false,
+      isFeching: false,
+      fetchingError: true,
+      errorMessage: action.errorMessage);
 }
 
 IndexState _getIndexLoading(IndexState state, GetWSBIndexLoadingAction action) {

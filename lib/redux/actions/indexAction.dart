@@ -11,4 +11,7 @@ class GetWSBIndeSuccessAction {
   GetWSBIndeSuccessAction({this.indexes});
 }
 
-class GetWSBIndexFailedAction {}
+class GetWSBIndexFailedAction {
+  final String errorMessage;
+  GetWSBIndexFailedAction({this.errorMessage});
+}

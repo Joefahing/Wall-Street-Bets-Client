@@ -5,7 +5,7 @@ import '../model/index.dart';
 
 ///This class is strictly used fetching all API data from the server
 class RemoteService {
-  static final String indexUrl = "http://wall-street-bet-server.herokuapp.com/post/index/";
+  static final String indexUrl = "https://wall-street-bet-server.herokuapp.com/post/index/";
 
   static Future<List<Index>> getIndex(String interval) async {
     final url = Uri.parse("$indexUrl$interval");

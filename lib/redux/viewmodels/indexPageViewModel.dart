@@ -11,14 +11,15 @@ class IndexPageViewModel {
   final bool fetchingError;
   final bool fetchingComplete;
   final List<Index> indexes;
+  final String errorMessage;
 
-  IndexPageViewModel({
-    this.interval,
-    this.isFetching,
-    this.fetchingError,
-    this.fetchingComplete,
-    this.indexes,
-  });
+  IndexPageViewModel(
+      {this.interval,
+      this.isFetching,
+      this.fetchingError,
+      this.fetchingComplete,
+      this.indexes,
+      this.errorMessage});
 
   factory IndexPageViewModel.fromStore(Store<AppState> store) {
     return IndexPageViewModel(
@@ -26,7 +27,8 @@ class IndexPageViewModel {
         isFetching: store.state.indexState.isFetching,
         fetchingComplete: store.state.indexState.fetchingComplete,
         fetchingError: store.state.indexState.fetchingError,
-        indexes: store.state.indexState.indexes);
+        indexes: store.state.indexState.indexes,
+        errorMessage: store.state.indexState.errorMessage);
   }
 
   String get intervalTitle {
@@ -62,5 +64,15 @@ class IndexPageViewModel {
     });
 
     return convertedSeries;
+  }
+
+  String indexesInText() {
+    String str = '';
+
+    for (int i = 0; i < indexes.length && i < 5; i++) {
+      str = str + "Points ${indexes[i].points},  Time ${indexes[i].dateCreated.toString()} \n";
+    }
+
+    return str.length == 0 ? "Index Array is Empty" : str;
   }
 }

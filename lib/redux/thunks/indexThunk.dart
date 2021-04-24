@@ -9,12 +9,11 @@ ThunkAction<AppState> getIndexByIntervalThunk() => (Store<AppState> store) async
       try {
         store.dispatch(GetWSBIndexLoadingAction());
         //print('printing indexes ');
-
         final indexes = await RemoteService.getIndex(store.state.viewState.interval);
         //print('printing indexes $indexes');
         store.dispatch(GetWSBIndeSuccessAction(indexes: indexes));
       } catch (error) {
-        store.dispatch(GetWSBIndexFailedAction());
+        store.dispatch(GetWSBIndexFailedAction(errorMessage: error.toString()));
       }
     };
   
