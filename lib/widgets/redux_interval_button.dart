@@ -6,6 +6,9 @@ import '../../redux/actions/viewAction.dart';
 
 import '../../components/theme_data.dart' as theme;
 
+
+/// As for now, this widget is being used by index view to allow users to 
+/// select different intervals
 class ReduxIntervalButton extends StatelessWidget {
   final String interval;
   final String title;
