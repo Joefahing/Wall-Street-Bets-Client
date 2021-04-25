@@ -42,11 +42,45 @@ class IndexPageViewModel {
     }
   }
 
+  int get baseIndex {
+    return fetchingComplete && indexes[0].points > 0 ? indexes[0].points : 1;
+  }
+
+  int get currentIndex {
+    return fetchingComplete ? indexes[indexes.length - 1].points : 0;
+  }
+
+  double get indexPercentage {
+    if (baseIndex == 0) {
+      return 0.0;
+    }
+
+    final diff = currentIndex - baseIndex;
+    final percentage = diff / baseIndex;
+
+    return percentage * 100.0;
+  }
+
+  bool get indexUpFlag {
+    return indexPercentage >= 0;
+  }
+
+  String get lastUpdateTime {
+    String trimDate = '';
+
+    if (fetchingComplete) {
+      final date = indexes[indexes.length - 1].dateCreated.toString();
+      trimDate = date.substring(0, 19);
+    }
+
+    return trimDate;
+  }
+
   List<Charts.Series<dynamic, DateTime>> get indexChartData {
     final timeSeriesIndexes = _convertIndexToTimeSeries(indexes: this.indexes);
     final indexChartData = convertDataToChartSeries(
       data: timeSeriesIndexes,
-      color: Charts.MaterialPalette.green.shadeDefault,
+      color: indexPercentage >= 0 ? ChartColor.green : ChartColor.red,
     );
     return [indexChartData];
   }
@@ -63,4 +97,11 @@ class IndexPageViewModel {
 
     return convertedSeries;
   }
+}
+
+class ChartColor {
+  static final blue = Charts.MaterialPalette.blue.shadeDefault;
+  static final red = Charts.MaterialPalette.red.shadeDefault;
+  static final green = Charts.MaterialPalette.green.shadeDefault;
+  static final yellow = Charts.MaterialPalette.yellow.shadeDefault;
 }
