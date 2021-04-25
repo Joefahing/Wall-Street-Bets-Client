@@ -4,10 +4,11 @@ import 'package:flutter_redux/flutter_redux.dart';
 import '../../redux/states/appState.dart';
 import '../../redux/viewmodels/indexPageViewModel.dart';
 import '../../redux/thunks/indexThunk.dart';
-import '../../redux/actions/viewAction.dart';
 import '../../components/adaptive.dart';
 import '../../components/theme_data.dart' as theme;
 import '../../widgets/line_chart.dart';
+import '../../widgets/searchbar.dart';
+import '../../widgets/redux_interval_button.dart';
 
 class WallStreetBetIndexPage extends StatelessWidget {
   @override
@@ -106,59 +107,20 @@ class WallStreetBetIndexPage extends StatelessWidget {
                                                 ),
                                                 child: Row(
                                                   children: [
-                                                    StoreConnector<AppState, VoidCallback>(
-                                                      converter: (store) {
-                                                        return () {
-                                                          store.dispatch(
-                                                              ViewIntervalPickerPressAction(
-                                                                  interval: 'month'));
-                                                          store.dispatch(getIndexByIntervalThunk());
-                                                        };
-                                                      },
-                                                      builder: (context, callback) {
-                                                        return IntervalFlatButton(
-                                                            title: 'Monthly',
-                                                            color: viewModel.interval == 'month'
-                                                                ? Colors.white
-                                                                : theme.lightGray,
-                                                            onPressed: callback);
-                                                      },
+                                                    ReduxIntervalButton(
+                                                      title: 'Monthly',
+                                                      interval: 'month',
+                                                      currentInterval: viewModel.interval,
                                                     ),
-                                                    StoreConnector<AppState, VoidCallback>(
-                                                      converter: (store) {
-                                                        return () {
-                                                          store.dispatch(
-                                                              ViewIntervalPickerPressAction(
-                                                                  interval: 'week'));
-                                                          store.dispatch(getIndexByIntervalThunk());
-                                                        };
-                                                      },
-                                                      builder: (context, callback) {
-                                                        return IntervalFlatButton(
-                                                            title: 'Weekly',
-                                                            color: viewModel.interval == 'week'
-                                                                ? Colors.white
-                                                                : theme.lightGray,
-                                                            onPressed: callback);
-                                                      },
+                                                    ReduxIntervalButton(
+                                                      title: 'Weekly',
+                                                      interval: 'week',
+                                                      currentInterval: viewModel.interval,
                                                     ),
-                                                    StoreConnector<AppState, VoidCallback>(
-                                                      converter: (store) {
-                                                        return () {
-                                                          store.dispatch(
-                                                              ViewIntervalPickerPressAction(
-                                                                  interval: 'day'));
-                                                          store.dispatch(getIndexByIntervalThunk());
-                                                        };
-                                                      },
-                                                      builder: (context, callback) {
-                                                        return IntervalFlatButton(
-                                                            title: 'Daily',
-                                                            color: viewModel.interval == 'day'
-                                                                ? Colors.white
-                                                                : theme.lightGray,
-                                                            onPressed: callback);
-                                                      },
+                                                    ReduxIntervalButton(
+                                                      title: 'Daily',
+                                                      interval: 'day',
+                                                      currentInterval: viewModel.interval,
                                                     ),
                                                   ],
                                                 ),
@@ -230,44 +192,6 @@ class WallStreetBetIndexPage extends StatelessWidget {
   }
 }
 
-class SearchBar extends StatelessWidget {
-  final double iconSize = 20.0;
-  final double width = 250;
-  final String hint = 'Search';
-
-  @override
-  Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: SizedBox(
-        width: width,
-        child: TextField(
-          style: theme.bodyText2.copyWith(color: Colors.black),
-          cursorColor: Colors.black,
-          cursorWidth: 1,
-          onChanged: (value) {},
-          decoration: InputDecoration(
-              prefixIcon: Icon(
-                Icons.search,
-                color: Colors.black,
-                size: iconSize,
-              ),
-              isDense: true,
-              hintText: hint,
-              focusColor: Colors.white,
-              hoverColor: Colors.white,
-              fillColor: Colors.white,
-              filled: true,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(40.0)),
-                borderSide: BorderSide.none,
-              )),
-        ),
-      ),
-    );
-  }
-}
-
 class Circle extends StatelessWidget {
   final double diameter;
   final Color color;
@@ -283,24 +207,6 @@ class Circle extends StatelessWidget {
         shape: BoxShape.circle,
       ),
     );
-  }
-}
-
-class IntervalFlatButton extends StatelessWidget {
-  final String title;
-  final Color color;
-  final void Function() onPressed;
-
-  IntervalFlatButton({@required this.title, this.color, @required this.onPressed});
-
-  @override
-  build(BuildContext context) {
-    return FlatButton(
-        child: Text(title, style: theme.headline4),
-        color: color,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(theme.borderRadius / 2)),
-        onPressed: onPressed,
-        hoverColor: theme.lightSilver);
   }
 }
 
