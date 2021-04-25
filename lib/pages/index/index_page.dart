@@ -14,7 +14,7 @@ class WallStreetBetIndexPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final adaptive = AdaptiveWindow.fromContext(context: context);
     final screenHeigh = MediaQuery.of(context).size.height;
-    final chartHeighFactor = 9 / 10;
+    final chartHeighFactor = 8.5 / 10;
     final double minChartHeigh = 500;
     final double maxChartHeigh = screenHeigh * chartHeighFactor < minChartHeigh
         ? minChartHeigh
@@ -48,8 +48,18 @@ class WallStreetBetIndexPage extends StatelessWidget {
                           height: measurements.gutter,
                         ),
                         Container(
-                          constraints:
-                              BoxConstraints(minHeight: minChartHeigh, maxHeight: maxChartHeigh),
+                          constraints: BoxConstraints(
+                            minHeight: minChartHeigh,
+                            maxHeight: maxChartHeigh,
+                          ),
+                          decoration: BoxDecoration(boxShadow: [
+                            BoxShadow(
+                              color: theme.lightSilver.withOpacity(0.3),
+                              spreadRadius: 2,
+                              blurRadius: 5,
+                              offset: Offset(0, 2),
+                            )
+                          ]),
                           child: FlatBackgroundBox(
                             child: Flex(
                               direction: Axis.vertical,
@@ -168,9 +178,29 @@ class WallStreetBetIndexPage extends StatelessWidget {
                                       style: theme.headline3,
                                     ),
                                     SizedBox(width: measurements.gutter),
-                                    Text('${viewModel.currentIndex}'),
+                                    Icon(
+                                      viewModel.indexUpFlag
+                                          ? Icons.arrow_drop_up_rounded
+                                          : Icons.arrow_drop_down_rounded,
+                                      size: 40,
+                                      color:
+                                          viewModel.indexUpFlag ? theme.leafGreen : theme.fireRed,
+                                    ),
+                                    Text(
+                                      '${viewModel.currentIndex}',
+                                      style: theme.headline3.copyWith(
+                                          color: viewModel.indexUpFlag
+                                              ? theme.leafGreen
+                                              : theme.fireRed),
+                                    ),
                                     SizedBox(width: measurements.gutter),
-                                    Text('${viewModel.indexPercentage.toStringAsFixed(2)}%')
+                                    Text(
+                                      '${viewModel.indexPercentage.toStringAsFixed(2)}%',
+                                      style: theme.headline3.copyWith(
+                                          color: viewModel.indexUpFlag
+                                              ? theme.leafGreen
+                                              : theme.fireRed),
+                                    ),
                                   ],
                                 ),
                                 Expanded(
@@ -202,22 +232,37 @@ class WallStreetBetIndexPage extends StatelessWidget {
 
 class SearchBar extends StatelessWidget {
   final double iconSize = 20.0;
+  final double width = 250;
+  final String hint = 'Search';
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
-      onChanged: (value) {},
-      decoration: InputDecoration(
-        prefixIcon: Icon(
-          Icons.search,
-          color: Colors.black,
-          size: iconSize,
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: SizedBox(
+        width: width,
+        child: TextField(
+          style: theme.bodyText2.copyWith(color: Colors.black),
+          cursorColor: Colors.black,
+          cursorWidth: 1,
+          onChanged: (value) {},
+          decoration: InputDecoration(
+              prefixIcon: Icon(
+                Icons.search,
+                color: Colors.black,
+                size: iconSize,
+              ),
+              isDense: true,
+              hintText: hint,
+              focusColor: Colors.white,
+              hoverColor: Colors.white,
+              fillColor: Colors.white,
+              filled: true,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(40.0)),
+                borderSide: BorderSide.none,
+              )),
         ),
-        hintText: "Search",
-        focusColor: Colors.white,
-        hoverColor: Colors.white,
-        fillColor: Colors.white,
-        filled: true,
       ),
     );
   }

@@ -43,11 +43,11 @@ class IndexPageViewModel {
   }
 
   int get baseIndex {
-    return indexes.length > 0 && indexes[0].points > 0 ? indexes[0].points : 1;
+    return fetchingComplete && indexes[0].points > 0 ? indexes[0].points : 1;
   }
 
   int get currentIndex {
-    return indexes.length > 0 ? indexes[indexes.length - 1].points : 0;
+    return fetchingComplete ? indexes[indexes.length - 1].points : 0;
   }
 
   double get indexPercentage {
@@ -59,6 +59,21 @@ class IndexPageViewModel {
     final percentage = diff / baseIndex;
 
     return percentage * 100.0;
+  }
+
+  bool get indexUpFlag {
+    return indexPercentage >= 0;
+  }
+
+  String get lastUpdateTime {
+    String trimDate = '';
+
+    if (fetchingComplete) {
+      final date = indexes[indexes.length - 1].dateCreated.toString();
+      trimDate = date.substring(0, 19);
+    }
+
+    return trimDate;
   }
 
   List<Charts.Series<dynamic, DateTime>> get indexChartData {
