@@ -14,8 +14,7 @@ class WallStreetBetIndexPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final adaptive = AdaptiveWindow.fromContext(context: context);
     final screenHeigh = MediaQuery.of(context).size.height;
-    final screenWidth = MediaQuery.of(context).size.width;
-    final chartHeighFactor = 8 / 10;
+    final chartHeighFactor = 9 / 10;
     final double minChartHeigh = 500;
     final double maxChartHeigh = screenHeigh * chartHeighFactor < minChartHeigh
         ? minChartHeigh
@@ -44,105 +43,10 @@ class WallStreetBetIndexPage extends StatelessWidget {
                     ),
                     child: Column(
                       children: [
-                        FlatBackgroundBox(
-                          child: LayoutBuilder(
-                            builder: (context, constraint) {
-                              final double minWidth = 750;
-                              int crossAxisCount = adaptive.width < minWidth ? 1 : 2;
-                              double itemWidth = constraint.maxWidth / crossAxisCount;
-                              int widgetHeigh = crossAxisCount == 1 ? 65 : 80;
-                              return GridView.count(
-                                childAspectRatio: itemWidth / widgetHeigh,
-                                crossAxisCount: crossAxisCount,
-                                primary: false,
-                                shrinkWrap: true,
-                                children: [
-                                  Column(
-                                    children: [
-                                      Text('Wall Street Bets for Fools', style: theme.headline1),
-                                      Text('Lose Money With Friends', style: theme.headline3),
-                                    ],
-                                  ),
-                                  Align(
-                                    alignment: Alignment.center,
-                                    child: Row(
-                                      mainAxisAlignment: crossAxisCount == 1
-                                          ? MainAxisAlignment.center
-                                          : MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        SizedBox(width: 1),
-                                        Container(
-                                          padding: EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                            color: theme.lightGray,
-                                            borderRadius: BorderRadius.circular(theme.borderRadius),
-                                          ),
-                                          child: Row(
-                                            children: [
-                                              StoreConnector<AppState, VoidCallback>(
-                                                converter: (store) {
-                                                  return () {
-                                                    store.dispatch(ViewIntervalPickerPressAction(
-                                                        interval: 'month'));
-                                                    store.dispatch(getIndexByIntervalThunk());
-                                                  };
-                                                },
-                                                builder: (context, callback) {
-                                                  return IntervalFlatButton(
-                                                      title: 'Monthly',
-                                                      color: viewModel.interval == 'month'
-                                                          ? Colors.white
-                                                          : theme.lightGray,
-                                                      onPressed: callback);
-                                                },
-                                              ),
-                                              SizedBox(width: measurements.gutter / 2),
-                                              StoreConnector<AppState, VoidCallback>(
-                                                converter: (store) {
-                                                  return () {
-                                                    store.dispatch(ViewIntervalPickerPressAction(
-                                                        interval: 'week'));
-                                                    store.dispatch(getIndexByIntervalThunk());
-                                                  };
-                                                },
-                                                builder: (context, callback) {
-                                                  return IntervalFlatButton(
-                                                      title: 'Weekly',
-                                                      color: viewModel.interval == 'week'
-                                                          ? Colors.white
-                                                          : theme.lightGray,
-                                                      onPressed: callback);
-                                                },
-                                              ),
-                                              StoreConnector<AppState, VoidCallback>(
-                                                converter: (store) {
-                                                  return () {
-                                                    store.dispatch(ViewIntervalPickerPressAction(
-                                                        interval: 'day'));
-                                                    store.dispatch(getIndexByIntervalThunk());
-                                                  };
-                                                },
-                                                builder: (context, callback) {
-                                                  return IntervalFlatButton(
-                                                      title: 'Daily',
-                                                      color: viewModel.interval == 'day'
-                                                          ? Colors.white
-                                                          : theme.lightGray,
-                                                      onPressed: callback);
-                                                },
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  )
-                                ],
-                              );
-                            },
-                          ),
+                        SearchBar(),
+                        SizedBox(
+                          height: measurements.gutter,
                         ),
-                        SizedBox(height: measurements.gutter / 2, width: measurements.gutter),
                         Container(
                           constraints:
                               BoxConstraints(minHeight: minChartHeigh, maxHeight: maxChartHeigh),
@@ -150,14 +54,122 @@ class WallStreetBetIndexPage extends StatelessWidget {
                             child: Flex(
                               direction: Axis.vertical,
                               children: [
+                                LayoutBuilder(
+                                  builder: (context, constraint) {
+                                    final double minWidth = 750;
+                                    int crossAxisCount = adaptive.width < minWidth ? 1 : 2;
+                                    double itemWidth = constraint.maxWidth / crossAxisCount;
+                                    int widgetHeigh = crossAxisCount == 1 ? 65 : 80;
+                                    return GridView.count(
+                                      childAspectRatio: itemWidth / widgetHeigh,
+                                      crossAxisCount: crossAxisCount,
+                                      primary: false,
+                                      shrinkWrap: true,
+                                      children: [
+                                        Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              'Wall Street Bets',
+                                              style: theme.headline2,
+                                            ),
+                                            Text(
+                                              'Dashboard',
+                                              style: theme.headline2,
+                                            ),
+                                          ],
+                                        ),
+                                        Align(
+                                          alignment: Alignment.center,
+                                          child: Row(
+                                            mainAxisAlignment: crossAxisCount == 1
+                                                ? MainAxisAlignment.center
+                                                : MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              SizedBox(width: 1),
+                                              Container(
+                                                padding: EdgeInsets.all(10),
+                                                decoration: BoxDecoration(
+                                                  color: theme.lightGray,
+                                                  borderRadius:
+                                                      BorderRadius.circular(theme.borderRadius),
+                                                ),
+                                                child: Row(
+                                                  children: [
+                                                    StoreConnector<AppState, VoidCallback>(
+                                                      converter: (store) {
+                                                        return () {
+                                                          store.dispatch(
+                                                              ViewIntervalPickerPressAction(
+                                                                  interval: 'month'));
+                                                          store.dispatch(getIndexByIntervalThunk());
+                                                        };
+                                                      },
+                                                      builder: (context, callback) {
+                                                        return IntervalFlatButton(
+                                                            title: 'Monthly',
+                                                            color: viewModel.interval == 'month'
+                                                                ? Colors.white
+                                                                : theme.lightGray,
+                                                            onPressed: callback);
+                                                      },
+                                                    ),
+                                                    StoreConnector<AppState, VoidCallback>(
+                                                      converter: (store) {
+                                                        return () {
+                                                          store.dispatch(
+                                                              ViewIntervalPickerPressAction(
+                                                                  interval: 'week'));
+                                                          store.dispatch(getIndexByIntervalThunk());
+                                                        };
+                                                      },
+                                                      builder: (context, callback) {
+                                                        return IntervalFlatButton(
+                                                            title: 'Weekly',
+                                                            color: viewModel.interval == 'week'
+                                                                ? Colors.white
+                                                                : theme.lightGray,
+                                                            onPressed: callback);
+                                                      },
+                                                    ),
+                                                    StoreConnector<AppState, VoidCallback>(
+                                                      converter: (store) {
+                                                        return () {
+                                                          store.dispatch(
+                                                              ViewIntervalPickerPressAction(
+                                                                  interval: 'day'));
+                                                          store.dispatch(getIndexByIntervalThunk());
+                                                        };
+                                                      },
+                                                      builder: (context, callback) {
+                                                        return IntervalFlatButton(
+                                                            title: 'Daily',
+                                                            color: viewModel.interval == 'day'
+                                                                ? Colors.white
+                                                                : theme.lightGray,
+                                                            onPressed: callback);
+                                                      },
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        )
+                                      ],
+                                    );
+                                  },
+                                ),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
                                     Text(
                                       '${viewModel.intervalTitle} Index',
-                                      style: theme.headline1,
+                                      style: theme.headline3,
                                     ),
+                                    SizedBox(width: measurements.gutter),
                                     Text('${viewModel.currentIndex}'),
+                                    SizedBox(width: measurements.gutter),
                                     Text('${viewModel.indexPercentage.toStringAsFixed(2)}%')
                                   ],
                                 ),
@@ -185,6 +197,29 @@ class WallStreetBetIndexPage extends StatelessWidget {
             ),
           );
         });
+  }
+}
+
+class SearchBar extends StatelessWidget {
+  final double iconSize = 20.0;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      onChanged: (value) {},
+      decoration: InputDecoration(
+        prefixIcon: Icon(
+          Icons.search,
+          color: Colors.black,
+          size: iconSize,
+        ),
+        hintText: "Search",
+        focusColor: Colors.white,
+        hoverColor: Colors.white,
+        fillColor: Colors.white,
+        filled: true,
+      ),
+    );
   }
 }
 
@@ -243,5 +278,3 @@ class FlatBackgroundBox extends StatelessWidget {
     );
   }
 }
-
-
