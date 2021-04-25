@@ -9,7 +9,7 @@ import '../../components/adaptive.dart';
 import '../../components/theme_data.dart' as theme;
 import '../../widgets/line_chart.dart';
 
-class WallStreetBetIndexPage extends StatelessWidget{
+class WallStreetBetIndexPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final adaptive = AdaptiveWindow.fromContext(context: context);
@@ -24,7 +24,6 @@ class WallStreetBetIndexPage extends StatelessWidget{
 
     return StoreConnector<AppState, IndexPageViewModel>(
         onInit: (store) {
-          // store.dispatch(ViewIntervalPickerPressAction(interval: 'day'));
           store.dispatch(getIndexByIntervalThunk());
           return null;
         },
@@ -152,12 +151,14 @@ class WallStreetBetIndexPage extends StatelessWidget{
                               direction: Axis.vertical,
                               children: [
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
                                     Text(
                                       '${viewModel.intervalTitle} Index',
                                       style: theme.headline1,
                                     ),
+                                    Text('${viewModel.currentIndex}'),
+                                    Text('${viewModel.indexPercentage.toStringAsFixed(2)}%')
                                   ],
                                 ),
                                 Expanded(
@@ -242,3 +243,5 @@ class FlatBackgroundBox extends StatelessWidget {
     );
   }
 }
+
+

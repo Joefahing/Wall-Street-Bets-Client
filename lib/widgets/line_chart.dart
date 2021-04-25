@@ -11,9 +11,10 @@ class WallStreetBetTimeSeriesChart extends StatelessWidget {
     return new Charts.TimeSeriesChart(
       series,
       animate: true,
-      dateTimeFactory: const Charts.UTCDateTimeFactory(),
-      defaultRenderer: Charts.LineRendererConfig(includeArea: true,),
-      
+      dateTimeFactory: Charts.UTCDateTimeFactory(),
+      defaultRenderer: Charts.LineRendererConfig(includeArea: true),
+      primaryMeasureAxis: Charts.NumericAxisSpec(
+          tickProviderSpec: Charts.BasicNumericTickProviderSpec(zeroBound: false)),
     );
   }
 }
